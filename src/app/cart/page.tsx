@@ -18,7 +18,7 @@ export default function CartPage() {
           Shopping Cart is Empty
         </h1>
         <p className="text-xs text-neutral-500 max-w-sm mx-auto">
-          പ്ലാനറുകൾ, കസ്റ്റം ഡയറികൾ, ടൂ-ഡൂ ലിസ്റ്റുകൾ എന്നിവ കാർട്ടിലേക്ക് ചേർക്കുക.
+          Explore our handcrafted diaries, planners, and stationery essentials to get started.
         </p>
         <div className="pt-2">
           <Link
@@ -42,7 +42,7 @@ export default function CartPage() {
             Shopping Cart
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
-            നിങ്ങൾ തിരഞ്ഞെടുത്ത സാധനങ്ങളും കസ്റ്റം പേരുകളും പരിശോധിക്കുക
+            Review your selected items, personalization details, and quantities
           </p>
         </div>
         <Link
@@ -86,7 +86,7 @@ export default function CartPage() {
                   {item.customText && (
                     <div className="text-xs bg-neutral-50 border border-black/20 rounded p-1.5 text-black">
                       <span className="text-[9px] uppercase tracking-wider text-neutral-500 font-bold block">
-                        പ്രിന്റ് ചെയ്യേണ്ട പേര് (Name to print):
+                        Personalized Name to Print:
                       </span>
                       <span className="font-serif font-bold text-black text-sm">
                         &ldquo;{item.customText}&rdquo;

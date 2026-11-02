@@ -15,7 +15,7 @@ export const CustomizerPreview: React.FC<CustomizerPreviewProps> = ({
   customText,
   onTextChange,
   selectedColor = "Obsidian Black",
-  placeholder = "കവറിൽ പ്രിന്റ് ചെയ്യേണ്ട പേര് നൽകുക",
+  placeholder = "Enter custom name to print on cover",
   category
 }) => {
   const [fontStyle, setFontStyle] = useState<"serif" | "cursive" | "sans">("serif");
@@ -81,7 +81,7 @@ export const CustomizerPreview: React.FC<CustomizerPreviewProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-black font-bold text-xs uppercase tracking-wider">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>കവറിൽ പേര് നൽകുക (Live Name Preview)</span>
+          <span>Personalize Cover (Live Name Preview)</span>
         </div>
         <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded font-mono uppercase">
           Free Customization
@@ -111,7 +111,7 @@ export const CustomizerPreview: React.FC<CustomizerPreviewProps> = ({
         >
           {customText.trim() ? customText : (
             <span className="opacity-25 italic font-normal text-sm text-neutral-400">
-              (നിങ്ങളുടെ പേര് ഇവിടെ തെളിയും)
+              (Your custom name will appear here)
             </span>
           )}
         </div>
@@ -124,7 +124,7 @@ export const CustomizerPreview: React.FC<CustomizerPreviewProps> = ({
       {/* Input Field */}
       <div>
         <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-          പ്രിന്റ് ചെയ്യേണ്ട പേര് അല്ലെങ്കിൽ വരികൾ നൽകുക:
+          Enter Name or Text to Print:
         </label>
         <div className="relative">
           <input
@@ -145,7 +145,7 @@ export const CustomizerPreview: React.FC<CustomizerPreviewProps> = ({
       <div className="grid grid-cols-2 gap-3 pt-1">
         <div>
           <label className="block text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-            ഫോണ്ട് സ്റ്റൈൽ (Font):
+            Font Style:
           </label>
           <div className="flex gap-1.5">
             {[
@@ -172,7 +172,7 @@ export const CustomizerPreview: React.FC<CustomizerPreviewProps> = ({
 
         <div>
           <label className="block text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-            പ്രിന്റ് ഫോയിൽ (Foil):
+            Foil Emboss:
           </label>
           <div className="flex gap-1.5">
             {[
@@ -199,7 +199,7 @@ export const CustomizerPreview: React.FC<CustomizerPreviewProps> = ({
 
       <div className="text-[11px] text-neutral-500 flex items-center gap-1.5 bg-white p-2 rounded-lg border border-neutral-200">
         <Check className="w-3.5 h-3.5 text-black shrink-0" />
-        <span>ഓർഡർ ചെയ്യുമ്പോൾ ഈ പേര് കൃത്യമായി പ്രിന്റ് ചെയ്ത് അയച്ചു നൽകും.</span>
+        <span>This personalized name will be precision-embossed on your order.</span>
       </div>
     </div>
   );

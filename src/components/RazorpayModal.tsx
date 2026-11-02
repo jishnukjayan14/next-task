@@ -67,7 +67,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-slate-400">തുക (Amount)</div>
+            <div className="text-xs text-slate-400">Total Amount</div>
             <div className="text-xl font-bold text-white">₹{amount}</div>
           </div>
         </div>
@@ -77,10 +77,10 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
           <div className="p-10 flex flex-col items-center justify-center text-center space-y-4">
             <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
             <h3 className="font-semibold text-lg text-slate-800">
-              പേയ്‌മെന്റ് പ്രൊസസ്സ് ചെയ്യുന്നു...
+              Processing Payment...
             </h3>
             <p className="text-xs text-slate-500 max-w-xs">
-              ദയവായി ബാക്ക് അല്ലെങ്കിൽ റിഫ്രഷ് അടിക്കരുത്. Razorpay സുരക്ഷിതമായ സർവറുകളുമായി കണക്ട് ചെയ്യുന്നു.
+              Please do not refresh or go back. Connecting securely with Razorpay payment servers.
             </p>
           </div>
         ) : step === "success" ? (
@@ -89,7 +89,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <h3 className="font-bold text-xl text-slate-800">
-              പേയ്‌മെന്റ് വിജയകരം!
+              Payment Successful!
             </h3>
             <p className="text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full font-mono">
               Payment Verified by Razorpay
@@ -156,7 +156,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
             {selectedMethod === "upi" && (
               <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div className="text-xs font-semibold text-slate-700">
-                  ഏതെങ്കിലും UPI ആപ്പ് തിരഞ്ഞെടുക്കുക:
+                  Select your UPI app:
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {[
@@ -178,14 +178,14 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
 
                 <div className="pt-2">
                   <label className="block text-[11px] text-slate-500 mb-1">
-                    അല്ലെങ്കിൽ നിങ്ങളുടെ UPI ID നൽകുക:
+                    Or enter your UPI ID:
                   </label>
                   <input
                     type="text"
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     placeholder="example@upi / mobile@okhdfcbank"
-                    className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full text-xs px-3.5 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -194,7 +194,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
             {selectedMethod === "qr" && (
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col items-center text-center space-y-2">
                 <div className="text-xs font-semibold text-slate-700">
-                  ഏതൊരു UPI ആപ്പ് വഴിയും QR കോഡ് സ്കാൻ ചെയ്യാം
+                  Scan QR code with any UPI app
                 </div>
                 <div className="p-3 bg-white rounded-lg border border-slate-300 shadow-xs inline-block">
                   <div className="w-36 h-36 bg-[radial-gradient(#0c2340_2px,transparent_2px)] [background-size:8px_8px] flex items-center justify-center border-4 border-slate-900 rounded">
@@ -204,7 +204,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
                   </div>
                 </div>
                 <span className="text-[11px] text-slate-500">
-                  GPay, PhonePe, Paytm, BHIM സപ്പോർട്ട് ചെയ്യുന്നു
+                  Supports Google Pay, PhonePe, Paytm, BHIM & UPI
                 </span>
               </div>
             )}
@@ -237,14 +237,14 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
 
             {selectedMethod === "netbanking" && (
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <div className="text-xs text-slate-600 mb-2 font-medium">ബാങ്ക് തിരഞ്ഞെടുക്കുക:</div>
+                <div className="text-xs text-slate-600 mb-2 font-medium">Select your Bank:</div>
                 <select className="w-full text-xs p-2 bg-white border border-slate-300 rounded-lg">
                   <option>State Bank of India (SBI)</option>
                   <option>HDFC Bank</option>
                   <option>ICICI Bank</option>
                   <option>Federal Bank</option>
                   <option>Axis Bank</option>
-                  <option>Kerala Gramin Bank</option>
+                  <option>Punjab National Bank</option>
                 </select>
               </div>
             )}
@@ -256,7 +256,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({
                 onClick={handlePay}
                 className="w-full py-3 px-4 bg-[#0c2340] hover:bg-[#12335c] text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all"
               >
-                <span>₹{amount} അടയ്ക്കുക (Pay via Razorpay)</span>
+                <span>Pay ₹{amount} via Razorpay</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

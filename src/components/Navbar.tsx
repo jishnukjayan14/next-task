@@ -148,7 +148,7 @@ export const Navbar: React.FC = () => {
                 : "border-transparent text-neutral-600 hover:text-black"
             }`}
           >
-            Shop All (എല്ലാം)
+            Shop All
           </button>
 
           <button
@@ -159,7 +159,7 @@ export const Navbar: React.FC = () => {
                 : "border-transparent text-neutral-600 hover:text-black"
             }`}
           >
-            Custom Diaries (കസ്റ്റം ഡയറികൾ)
+            Custom Diaries
           </button>
 
           <button
@@ -170,7 +170,7 @@ export const Navbar: React.FC = () => {
                 : "border-transparent text-neutral-600 hover:text-black"
             }`}
           >
-            Digital Printables (ഡൗൺലോഡുകൾ)
+            Digital Printables
           </button>
 
           <button
@@ -181,7 +181,7 @@ export const Navbar: React.FC = () => {
                 : "border-transparent text-neutral-600 hover:text-black"
             }`}
           >
-            Ready Stock (റെഡി സ്റ്റോക്ക്)
+            Ready Stock
           </button>
 
           <Link
@@ -192,7 +192,7 @@ export const Navbar: React.FC = () => {
                 : "border-transparent text-neutral-600 hover:text-black"
             }`}
           >
-            My Orders (ഓർഡറുകൾ)
+            My Orders
           </Link>
 
           {/* If Admin is logged in, show dedicated Admin Dashboard link */}
@@ -246,7 +246,7 @@ export const Navbar: React.FC = () => {
               className="flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-black border border-black px-3.5 py-1.5 rounded-full hover:bg-black hover:text-white transition-all cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Sign In (ലോഗിൻ)</span>
+              <span>Sign In</span>
             </button>
           )}
 
@@ -273,32 +273,32 @@ export const Navbar: React.FC = () => {
             onClick={() => handleNavClick("ALL", "ALL")}
             className="w-full text-left py-2 text-black border-b border-black/5"
           >
-            Shop All (എല്ലാം)
+            Shop All
           </button>
           <button
             onClick={() => handleNavClick("CUSTOM", "Diaries")}
             className="w-full text-left py-2 text-black border-b border-black/5"
           >
-            Custom Diaries (കസ്റ്റം ഡയറികൾ)
+            Custom Diaries
           </button>
           <button
             onClick={() => handleNavClick("DIGITAL", "ALL")}
             className="w-full text-left py-2 text-black border-b border-black/5"
           >
-            Digital Printables (ഡൗൺലോഡുകൾ)
+            Digital Printables
           </button>
           <button
             onClick={() => handleNavClick("READY", "ALL")}
             className="w-full text-left py-2 text-black border-b border-black/5"
           >
-            Ready Stock (റെഡി സ്റ്റോക്ക്)
+            Ready Stock
           </button>
           <Link
             href="/my-orders"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-black border-b border-black/5"
           >
-            My Orders (എന്റെ ഓർഡറുകൾ)
+            My Orders
           </Link>
 
           {/* Admin link on mobile */}
@@ -322,7 +322,7 @@ export const Navbar: React.FC = () => {
                 className="w-full flex items-center justify-center gap-2 py-2 px-3 border border-black rounded-lg text-black font-bold cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5" />
-                <span>Admin Login (സ്റ്റോർ മാനേജ്‌മെന്റ്)</span>
+                <span>Admin Login (Store Management)</span>
               </button>
             )}
           </div>
@@ -373,17 +373,17 @@ export const Navbar: React.FC = () => {
               <div className="space-y-4">
                 <div className="text-center">
                   <h3 className="font-sans font-bold text-base text-black">
-                    കസ്റ്റമർ ലോഗിൻ
+                    Customer Sign In
                   </h3>
                   <p className="text-xs text-neutral-500 mt-0.5">
-                    ഓർഡറുകൾ ചെയ്യാനും PDF ഡൗൺലോഡ് ചെയ്യാനും ഇമെയിൽ നൽകുക
+                    Enter your email to track orders and access digital downloads
                   </p>
                 </div>
 
                 <form onSubmit={handleCustomerSubmit} className="space-y-3.5">
                   <div>
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                      ഇമെയിൽ വിലാസം (Email ID)*
+                      Email Address *
                     </label>
                     <input
                       type="email"
@@ -397,11 +397,11 @@ export const Navbar: React.FC = () => {
 
                   <div>
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                      പേര് (Your Name)
+                      Your Name (Optional)
                     </label>
                     <input
                       type="text"
-                      placeholder="ഉദാ: Rahul"
+                      placeholder="e.g., Rahul"
                       value={custName}
                       onChange={(e) => setCustName(e.target.value)}
                       className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg focus:outline-none focus:border-black text-black"
@@ -423,7 +423,7 @@ export const Navbar: React.FC = () => {
                     className="text-[11px] text-neutral-500 hover:text-black flex items-center justify-center gap-1 mx-auto cursor-pointer"
                   >
                     <Lock className="w-3 h-3" />
-                    <span>സ്റ്റോർ ഉടമയാണോ? <strong>Admin Login</strong> ഇവിടെ ചെയ്യാം</span>
+                    <span>Store Owner? <strong>Admin Login Here</strong></span>
                   </button>
                 </div>
               </div>
@@ -437,23 +437,23 @@ export const Navbar: React.FC = () => {
                     <Shield className="w-5 h-5" />
                   </div>
                   <h3 className="font-sans font-bold text-base text-black">
-                    സ്റ്റോർ അഡ്മിൻ പോർട്ടൽ
+                    Store Admin Portal
                   </h3>
                   <p className="text-xs text-neutral-500 mt-0.5">
-                    കസ്റ്റമർ ഓർഡറുകൾ കാണാനും മാനേജ് ചെയ്യാനും പാസ്‌വേഡ് നൽകുക
+                    Enter administrative passcode to manage orders and catalog
                   </p>
                 </div>
 
                 {adminError && (
                   <div className="p-2.5 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-semibold text-center">
-                    തെറ്റായ പാസ്‌വേഡ്! (Password: admin123)
+                    Incorrect password! (Password: admin123)
                   </div>
                 )}
 
                 <form onSubmit={handleAdminSubmit} className="space-y-3.5">
                   <div>
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                      അഡ്മിൻ പാസ്‌വേഡ് (Admin Passcode)*
+                      Admin Passcode *
                     </label>
                     <div className="relative">
                       <input
@@ -492,7 +492,7 @@ export const Navbar: React.FC = () => {
                     onClick={() => setAuthTab("customer")}
                     className="text-[11px] text-neutral-500 hover:text-black cursor-pointer"
                   >
-                    ← തിരികെ കസ്റ്റമർ ലോഗിനിലേക്ക്
+                    ← Back to Customer Login
                   </button>
                 </div>
               </div>

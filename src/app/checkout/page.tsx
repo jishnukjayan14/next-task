@@ -27,12 +27,12 @@ export default function CheckoutPage() {
   if (cart.length === 0) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="font-bold text-xl text-black uppercase">കാർട്ടിൽ സാധനങ്ങൾ ഒന്നുമില്ല</h2>
+        <h2 className="font-bold text-xl text-black uppercase">Your Cart is Empty</h2>
         <Link
           href="/"
           className="inline-block px-5 py-2.5 bg-black text-white rounded text-xs font-bold uppercase tracking-wider"
         >
-          തിരികെ സ്റ്റോറിലേക്ക്
+          Return to Store
         </Link>
       </div>
     );
@@ -42,7 +42,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (hasPhysicalInCart) {
       if (!shipping.fullName || !shipping.phone || !shipping.addressLine || !shipping.pincode) {
-        setAddressErrors("ദയവായി ഷിപ്പിംഗ് അഡ്രസ്സിലെ എല്ലാ വിവരങ്ങളും നൽകുക.");
+        setAddressErrors("Please fill in all required shipping address fields.");
         return;
       }
     }
@@ -83,7 +83,7 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  Email Address (ഇമെയിൽ)*
+                  Email Address *
                 </label>
                 <input
                   type="email"
@@ -193,7 +193,7 @@ export default function CheckoutPage() {
             ) : (
               <div className="bg-neutral-100 border border-neutral-200 rounded-xl p-4 flex items-center gap-2.5 text-xs text-neutral-700">
                 <Download className="w-5 h-5 text-black shrink-0" />
-                <span>ഡിജിറ്റൽ ഡൗൺലോഡ് മാത്രമായതിനാൽ ഷിപ്പിംഗ് വിലാസം ആവശ്യമില്ല.</span>
+                <span>Digital order only — No physical delivery required. Instant download will be unlocked immediately upon checkout.</span>
               </div>
             )}
 
@@ -208,7 +208,7 @@ export default function CheckoutPage() {
               className="w-full py-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider rounded-lg flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
             >
               <Lock className="w-4 h-4" />
-              <span>Pay ₹{cartTotal} via Razorpay (റേസർപേ വഴി അടയ്ക്കുക)</span>
+              <span>Pay ₹{cartTotal} via Razorpay</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>

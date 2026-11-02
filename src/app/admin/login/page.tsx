@@ -42,20 +42,20 @@ export default function AdminLoginPage() {
             Next Task Admin Portal
           </h2>
           <p className="text-xs text-neutral-500">
-            സ്റ്റോർ അഡ്മിൻമാർക്ക് മാത്രമുള്ള സെപ്പറേറ്റ് ലോഗിൻ
+            Exclusive portal for store administration and order fulfillment
           </p>
         </div>
 
         {error && (
           <div className="p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-semibold text-center">
-            തെറ്റായ പാസ്‌വേഡ്! (Default Passcode: admin123)
+            Incorrect passcode! (Default Passcode: admin123)
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-              അഡ്മിൻ പാസ്‌വേഡ് (Admin Passcode)*
+              Admin Passcode *
             </label>
             <div className="relative">
               <input
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
             className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-black"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>കസ്റ്റമർ സ്റ്റോറിലേക്ക് തിരികെ പോകുക</span>
+            <span>Return to Customer Store</span>
           </Link>
         </div>
 

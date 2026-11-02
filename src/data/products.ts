@@ -24,18 +24,18 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: "prod-1",
     title: "Personalized Matte Black Leather Diary",
-    subtitle: "നിങ്ങളുടെ പേര് സിൽവർ / ഗോൾഡൻ ഫോയിലിൽ പ്രിന്റ് ചെയ്തു നൽകുന്ന ലക്ഷ്വറി ഡയറി",
+    subtitle: "Custom gold or silver foil embossed name on luxury vegan leather",
     price: 499,
     originalPrice: 799,
     type: "CUSTOM_PHYSICAL",
     category: "Diaries",
     badge: "Custom Made",
-    description: "പ്രീമിയം 100 GSM അൺറൂൾഡ് പേപ്പറുകൾ അടങ്ങിയ ലക്ഷ്വറി വീഗൻ ലെതർ ഡയറി. നിങ്ങളുടെ പേരോ നിങ്ങൾ നൽകുന്ന പ്രിയപ്പെട്ട വാക്കോ ഇതിന്റെ കവറിൽ മനോഹരമായി എംബോസ് ചെയ്ത് പ്രിന്റ് ചെയ്ത് നൽകുന്നു.",
+    description: "A luxury vegan leather diary featuring 192 pages of premium 100 GSM ivory unruled paper. Beautifully customized with your name or favorite word foil-embossed on the cover.",
     features: [
       "Custom Name Embossing in Metallic Silver / Gold / Blind Deboss",
       "192 Pages of 100 GSM Acid-Free Ivory Paper",
-      "Black Silk Ribbon Bookmark & Elastic Band",
-      "Pen Loop & Expandable Inner Pocket"
+      "Black Silk Ribbon Bookmark & Elastic Closure Band",
+      "Integrated Pen Loop & Expandable Inner Document Pocket"
     ],
     rating: 4.9,
     reviewsCount: 142,
@@ -51,24 +51,24 @@ export const INITIAL_PRODUCTS: Product[] = [
       { name: "Chalk White", hex: "#f3f4f6", class: "bg-stone-100" }
     ],
     allowsPersonalization: true,
-    personalizationPlaceholder: "ഉദാഹരണത്തിന്: Rahul K. / My Daily Thoughts"
+    personalizationPlaceholder: "e.g., Rahul K. / Next Task"
   },
   {
     id: "prod-2",
     title: "Minimalist Daily Planner & Habit Tracker (PDF)",
-    subtitle: "ഇൻസ്റ്റന്റ് ഡൗൺലോഡ് - പ്രിന്റ് ചെയ്യാവുന്ന ബ്ലാക്ക് & വൈറ്റ് ഡോക്യുമെന്റ്",
+    subtitle: "Instant Download — High-Resolution Printable Black & White Document",
     price: 99,
     originalPrice: 249,
     type: "DIGITAL",
     category: "Planners",
     badge: "Instant Download",
-    description: "നിങ്ങളുടെ ദൈനംദിന ഷെഡ്യൂളുകളും ടാസ്കുകളും ചിട്ടപ്പെടുത്താൻ സഹായിക്കുന്ന ക്ലീൻ മിനിമലിസ്റ്റിക് ബ്ലാക്ക് & വൈറ്റ് ഡിജിറ്റൽ പ്ലാനർ. വാങ്ങിയ ഉടൻ തന്നെ ഉയർന്ന ക്വാളിറ്റി PDF ആയി ഡൗൺലോഡ് ചെയ്യാം.",
+    description: "A clean, functional black-and-white daily planner designed to bring clarity and structure to your routine. Available for instant download in ultra-sharp PDF format upon purchase.",
     features: [
-      "ഉടൻ തന്നെ PDF ഡൗൺലോഡ് ചെയ്യാം (Instant Download)",
+      "Instant PDF Download Available Immediately After Payment",
       "Daily, Weekly & Monthly Goal Planning Sheets",
-      "Habit Tracker & Mood Tracker Templates",
-      "A4, A5 & US Letter സൈസുകളിൽ പ്രിന്റ് ചെയ്യാൻ അനുയോജ്യം",
-      "GoodNotes, Notability ആപ്പുകളിൽ ഉപയോഗിക്കാം"
+      "Habit Tracker & Focus Session Layouts",
+      "Optimized for A4, A5, and US Letter Printing",
+      "Fully Compatible with GoodNotes, Notability & iPad Apps"
     ],
     rating: 4.8,
     reviewsCount: 230,
@@ -83,18 +83,18 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: "prod-3",
     title: "Monochrome Engraved Bookmark (Personalized)",
-    subtitle: "കസ്റ്റം പേരും ക്വോട്ടും കൊത്തിയ പ്രീമിയം ബുക്ക്മാർക്ക്",
+    subtitle: "Custom laser-engraved name & literary quote with silk tassel",
     price: 199,
     originalPrice: 299,
     type: "CUSTOM_PHYSICAL",
     category: "Bookmarks",
     badge: "Handcrafted",
-    description: "പുസ്തകപ്രേമികൾക്കായി പ്രത്യേകമായി നിർമ്മിക്കുന്ന പ്രീമിയം മിനിമലിസ്റ്റ് ബുക്ക്മാർക്ക്. നിങ്ങളുടെ പേരും നിങ്ങളുടെ ഇഷ്ടപ്പെട്ട പുസ്തക വരികളും ലേസർ എൻഗ്രേവിംഗ് ചെയ്ത് നൽകുന്നു.",
+    description: "An elegant, handcrafted bookmark crafted for avid readers and book collectors. Precision laser-engraved with your custom name or favorite literary quotation.",
     features: [
       "Precision Laser Engraved Custom Name & Quote",
-      "Black Silk Tassel included",
-      "Durable Matte Finish",
-      "വായനക്കാർക്ക് സമ്മാനം നൽകാൻ ഏറ്റവും മികച്ച ചോയ്‌സ്"
+      "Premium Black Silk Tassel Included",
+      "Durable Scratch-Resistant Matte Finish",
+      "Perfect Keepsake Gift for Book Enthusiasts"
     ],
     rating: 5.0,
     reviewsCount: 88,
@@ -103,25 +103,25 @@ export const INITIAL_PRODUCTS: Product[] = [
       "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80"
     ],
     allowsPersonalization: true,
-    personalizationPlaceholder: "പേര് നൽകുക (ഉദാ: Ananya / Read & Conquer)"
+    personalizationPlaceholder: "Enter custom name or quote (e.g., Read & Conquer)"
   },
   {
     id: "prod-4",
     title: "Daily Task Priority Desk Pad (Ready Stock)",
-    subtitle: "റെഡി സ്റ്റോക്ക് - 50 ഷീറ്റുകൾ അടങ്ങിയ പ്രീമിയം ടിയർ-ഓഫ് പാഡ്",
+    subtitle: "Ready to Ship — 50 Tear-off Sheets of 100 GSM Bleed-Proof Paper",
     price: 149,
     originalPrice: 199,
     type: "READY_STOCK",
     category: "To-Do Lists",
     stock: 25,
     badge: "Ready to Ship",
-    description: "ദിവസേനയുള്ള ജോലികൾ മുൻഗണനാക്രമത്തിൽ രേഖപ്പെടുത്താൻ സഹായിക്കുന്ന ക്ലീൻ ബ്ലാക്ക് & വൈറ്റ് മിനിമലിസ്റ്റിക് ടൂ-ഡൂ ലിസ്റ്റ് പാഡ്. 50 കട്ടിയുള്ള ഷീറ്റുകൾ.",
+    description: "A clean, distraction-free desktop notepad engineered for maximum daily productivity. Features organized sections for top priority tasks, secondary goals, and notes.",
     features: [
-      "Ready to Ship immediately",
-      "Top Priority Tasks Section",
-      "Water Intake & Health Tracker",
-      "100 GSM bleed-resistant paper",
-      "50 Tear-off Sheets"
+      "Ready to Dispatch within 24 Hours",
+      "Dedicated Top 3 Priorities Section",
+      "Hourly Schedule & Water Intake Tracker",
+      "100 GSM Smooth Bleed-Resistant White Paper",
+      "50 Premium Glued Tear-Off Sheets"
     ],
     rating: 4.7,
     reviewsCount: 64,
@@ -134,18 +134,18 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: "prod-5",
     title: "Custom Hardcover To-Do Journal",
-    subtitle: "കസ്റ്റം ടൂ-ഡൂ നോട്ട്ബുക്ക് - കവറിൽ നിങ്ങളുടെ പേര് നൽകി നിർമ്മിക്കുന്നു",
+    subtitle: "Handcrafted Wire-Bound Notebook with Custom Name Cover Printing",
     price: 349,
     originalPrice: 499,
     type: "CUSTOM_PHYSICAL",
     category: "To-Do Lists",
     badge: "Custom Made",
-    description: "നിങ്ങളുടെ പേര് കവറിൽ പ്രിന്റ് ചെയ്തുകൊണ്ടുള്ള ഹാർഡ്ബൗണ്ട് ഡെയ്‌ലി ടാസ്ക് നോട്ട്ബുക്ക്. ദിവസം തുടങ്ങുമ്പോൾ നിങ്ങളുടെ പേര് കണ്ട് കൃത്യമായി പ്ലാൻ ചെയ്യാം.",
+    description: "Start each morning with focus and intention. Your custom name printed cleanly on the matte-laminated rigid hardcover with 120 pages of structured to-do checklists.",
     features: [
-      "Custom Name Printed on Hardcover",
-      "120 Pages of Structured To-Do Layouts",
-      "Black Spiral Binding",
-      "Durable Matte Laminated Finish"
+      "Personalized Name Printed on Hardcover",
+      "120 Pages of Structured To-Do Checklists",
+      "Sturdy Black Double-Wire Spiral Binding",
+      "Durable Matte Scratch-Proof Lamination"
     ],
     rating: 4.9,
     reviewsCount: 51,
@@ -154,23 +154,23 @@ export const INITIAL_PRODUCTS: Product[] = [
       "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=800&q=80"
     ],
     allowsPersonalization: true,
-    personalizationPlaceholder: "കവറിൽ പ്രിന്റ് ചെയ്യേണ്ട പേര്"
+    personalizationPlaceholder: "Name to print on the cover"
   },
   {
     id: "prod-6",
     title: "Monochrome 30-Day Habit Tracker Bundle (PDF)",
-    subtitle: "ഇൻസ്റ്റന്റ് ഡൗൺലോഡ് - 5 മിനിമൽ ലേഔട്ടുകൾ",
+    subtitle: "Instant Digital Download — 5 Minimalist Aesthetic Layouts",
     price: 79,
     originalPrice: 149,
     type: "DIGITAL",
     category: "Trackers",
     badge: "Instant Download",
-    description: "ശീലങ്ങൾ വളർത്തിയെടുക്കാൻ സഹായിക്കുന്ന ബ്ലാക്ക് & വൈറ്റ് പ്രിന്റബിൾ ഹാബിറ്റ് ട്രാക്കർ ടെംപ്ലേറ്റുകൾ. 5 വ്യത്യസ്ത മിനിമലിസ്റ്റിക് ലേഔട്ടുകളിൽ ലഭിക്കുന്നു.",
+    description: "Build lasting habits and track consistency with our monochrome aesthetic 30-day habit tracking collection. Includes 5 distinct minimalist layout options ready to print.",
     features: [
-      "ഉടൻ തന്നെ ഡൗൺലോഡ് ചെയ്യാം",
+      "Instant PDF Download Access Post-Checkout",
       "Clean Aesthetic Black & White Layouts",
       "Weekly & Monthly Tracker Grids",
-      "A4/A5 Printable PDF files"
+      "Printable in standard A4 and A5 Sizes"
     ],
     rating: 4.8,
     reviewsCount: 95,

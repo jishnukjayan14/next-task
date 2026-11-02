@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
               />
             </div>
             <p className="text-xs text-neutral-400 leading-relaxed max-w-xs">
-              പ്ലാനറുകൾ, കസ്റ്റം ഡയറികൾ, ടൂ-ഡൂ ലിസ്റ്റുകൾ, ഹാബിറ്റ് ട്രാക്കേഴ്സ് എന്നിവ നൽകുന്ന പ്രീമിയം മിനിമലിസ്റ്റ് സ്റ്റേഷനറി സ്റ്റുഡിയോ.
+              A premium minimalist stationery studio crafting personalized diaries, planners, to-do lists, and productivity printables.
             </p>
           </div>
 
@@ -46,7 +46,7 @@ export const Footer: React.FC = () => {
               Quick Links
             </h4>
             <ul className="space-y-2 text-xs text-neutral-400">
-              <li><Link href="/my-orders" className="hover:text-white transition-colors">My Orders (ഓർഡറുകൾ)</Link></li>
+              <li><Link href="/my-orders" className="hover:text-white transition-colors">My Orders</Link></li>
               <li><Link href="/cart" className="hover:text-white transition-colors">Shopping Cart</Link></li>
               <li><span className="text-neutral-500">Shipping & Delivery Info</span></li>
               <li><span className="text-neutral-500">Privacy Policy</span></li>

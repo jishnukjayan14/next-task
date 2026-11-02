@@ -55,10 +55,10 @@ export default function Home() {
           {/* Active filter text indicator */}
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-black">
-              {filterType === "ALL" && filterCategory === "ALL" && "All Products (എല്ലാം)"}
-              {filterType === "CUSTOM" && "Custom Made (കസ്റ്റം ഡയറികൾ & ബുക്ക്മാർക്കുകൾ)"}
-              {filterType === "DIGITAL" && "Digital Printables (ഇൻസ്റ്റന്റ് ഡൗൺലോഡ്)"}
-              {filterType === "READY" && "Ready Stock (റെഡി സ്റ്റോക്ക്)"}
+              {filterType === "ALL" && filterCategory === "ALL" && "All Products"}
+              {filterType === "CUSTOM" && "Custom Made (Diaries & Bookmarks)"}
+              {filterType === "DIGITAL" && "Digital Printables (Instant Download)"}
+              {filterType === "READY" && "Ready Stock Essentials"}
               {filterCategory !== "ALL" && ` • ${filterCategory}`}
             </span>
             <span className="text-xs text-neutral-400 font-mono">
@@ -85,7 +85,7 @@ export default function Home() {
           <div className="relative w-full sm:w-72">
             <input
               type="text"
-              placeholder="ഡയറി, പ്ലാനർ, ബുക്ക്മാർക്ക് തിരയുക..."
+              placeholder="Search diaries, planners, bookmarks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full text-xs pl-8 pr-3 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
@@ -126,7 +126,7 @@ export default function Home() {
       {filteredProducts.length === 0 ? (
         <div className="text-center py-20 bg-neutral-50 rounded-xl border border-neutral-200 p-8 space-y-3">
           <p className="text-neutral-500 text-xs">
-            തിരഞ്ഞെടുത്ത ഫിൽട്ടറിൽ പ്രൊഡക്റ്റുകൾ ലഭ്യമല്ല.
+            No products found matching your current filter.
           </p>
           <button
             onClick={() => {

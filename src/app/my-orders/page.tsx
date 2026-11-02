@@ -15,10 +15,10 @@ export default function MyOrdersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-5">
         <div>
           <h1 className="font-sans font-black text-3xl uppercase tracking-wider text-black">
-            My Orders (ഓർഡറുകൾ)
+            My Orders
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
-            നിങ്ങളുടെ ഡിജിറ്റൽ ഡൗൺലോഡുകളും ഓർഡർ ട്രാക്കിംഗും ഇവിടെ കാണാം
+            Track your shipments and access your instant digital printable downloads
           </p>
         </div>
 
@@ -35,10 +35,10 @@ export default function MyOrdersPage() {
             <Package className="w-7 h-7" />
           </div>
           <h3 className="font-bold text-base uppercase tracking-wider text-black">
-            ഓർഡറുകൾ ഒന്നും ചെയ്തിട്ടില്ല
+            No Orders Placed Yet
           </h3>
           <p className="text-xs text-neutral-500 max-w-sm mx-auto">
-            നിങ്ങളുടെ പേരിൽ കസ്റ്റമൈസ് ചെയ്ത ഡയറികളും ഡിജിറ്റൽ പ്ലാനറുകളും ഇപ്പോൾ തന്നെ ഓർഡർ ചെയ്യാം!
+            Order your personalized diaries, notebooks, and productivity trackers today!
           </p>
           <div className="pt-2">
             <Link
@@ -114,7 +114,7 @@ export default function MyOrdersPage() {
 
                         {item.customText && (
                           <div className="text-xs bg-neutral-100 text-black px-2 py-0.5 rounded border border-neutral-300 inline-flex items-center gap-1.5 font-serif font-bold">
-                            <span>പ്രിന്റ് ചെയ്യുന്ന പേര്: <strong>&ldquo;{item.customText}&rdquo;</strong></span>
+                            <span>Personalized Name: <strong>&ldquo;{item.customText}&rdquo;</strong></span>
                           </div>
                         )}
                       </div>

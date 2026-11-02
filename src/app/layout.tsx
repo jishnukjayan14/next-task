@@ -7,7 +7,7 @@ import { CartDrawer } from "@/components/CartDrawer";
 
 export const metadata: Metadata = {
   title: "NEXT TASK | Personalized Diaries, Planners & Digital Printables",
-  description: "NEXT TASK - ഹാൻഡ്ക്രാഫ്റ്റഡ് കസ്റ്റം ഡയറികൾ, ഡിജിറ്റൽ പ്രിന്റബിൾ പ്ലാനറുകൾ, ഹാബിറ്റ് ട്രാക്കേഴ്സ് എന്നിവ ഓൺലൈനായി വാങ്ങാം. Razorpay UPI സപ്പോർട്ട്.",
+  description: "NEXT TASK — Handcrafted personalized diaries, custom stationery, and downloadable digital productivity printables. Fast delivery and secure UPI/Card payments.",
 };
 
 export default function RootLayout({

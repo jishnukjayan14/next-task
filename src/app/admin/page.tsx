@@ -1,10 +1,31 @@
 "use client";
 
 import React, { useState } from "react";
-import { useStore } from "@/context/StoreContext";
-import { Shield, Sparkles, Package, Trash2, Edit3, Plus, LogOut, Check, X, Image as ImageIcon, MapPin, Mail, Phone, ExternalLink, Lock, Eye, EyeOff } from "lucide-react";
+import { useStore, Order } from "@/context/StoreContext";
+import {
+  Shield,
+  Sparkles,
+  Package,
+  Trash2,
+  Edit3,
+  Plus,
+  LogOut,
+  Check,
+  X,
+  Image as ImageIcon,
+  MapPin,
+  Mail,
+  Phone,
+  ExternalLink,
+  Lock,
+  Eye,
+  EyeOff,
+  Printer,
+  QrCode as QrIcon
+} from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/data/products";
+import { ShippingLabelModal } from "@/components/ShippingLabelModal";
 
 export default function AdminPage() {
   const {
@@ -30,6 +51,10 @@ export default function AdminPage() {
 
   // Editing modal state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  // Shipping Label modal state
+  const [selectedLabelOrder, setSelectedLabelOrder] = useState<Order | null>(null);
+  const [isLabelModalOpen, setIsLabelModalOpen] = useState(false);
 
   // New Product Form state
   const [newTitle, setNewTitle] = useState("");
@@ -69,20 +94,20 @@ export default function AdminPage() {
               Next Task Admin Portal
             </h2>
             <p className="text-xs text-neutral-500">
-              സ്റ്റോർ ഉടമയ്ക്ക് മാത്രമുള്ള പ്രൈവറ്റ് അഡ്മിൻ ആക്സസ്
+              Restricted administrative portal for store owners and fulfillment staff
             </p>
           </div>
 
           {inlineError && (
             <div className="p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-semibold text-center">
-              തെറ്റായ പാസ്‌വേഡ്! (Default Password: admin123)
+              Incorrect passcode! (Default Password: admin123)
             </div>
           )}
 
           <form onSubmit={handleInlineLogin} className="space-y-4">
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                അഡ്മിൻ പാസ്‌വേഡ് (Admin Passcode)*
+                Admin Passcode *
               </label>
               <div className="relative">
                 <input
@@ -120,7 +145,7 @@ export default function AdminPage() {
               href="/"
               className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-black"
             >
-              ← കസ്റ്റമർ സ്റ്റോറിലേക്ക് തിരികെ പോകുക
+              ← Return to Customer Store
             </Link>
           </div>
         </div>
@@ -145,41 +170,46 @@ export default function AdminPage() {
     e.preventDefault();
     if (!newTitle || !newPrice) return;
 
-    const mainImg = newImages[0] || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80";
-
-    const prod: Product = {
-      id: "prod-" + Math.random().toString(36).substr(2, 6),
+    addProduct({
+      id: "prod-" + Date.now(),
       title: newTitle,
-      subtitle: newSubtitle || "Next Task Productivity Essential",
+      subtitle: newSubtitle,
       price: parseFloat(newPrice),
       originalPrice: newOriginalPrice ? parseFloat(newOriginalPrice) : undefined,
-      type: newType,
       category: newCategory,
-      description: newDescription || "High quality handcrafted product made with care.",
-      features: ["Premium craftsmanship", "Quality inspected before dispatch"],
+      type: newType,
+      stock: newType === "READY_STOCK" ? parseInt(newStock) || 0 : undefined,
+      description: newDescription,
+      features: [
+        "100 GSM Premium Paper",
+        "Handcrafted Finish",
+        "Quality Inspected by Next Task"
+      ],
       rating: 5.0,
       reviewsCount: 1,
-      stock: newType === "READY_STOCK" ? parseInt(newStock) || 10 : undefined,
-      imageUrl: mainImg,
-      images: newImages.length > 0 ? newImages : [mainImg],
+      imageUrl: newImages[0] || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80",
+      images: newImages,
       allowsPersonalization: newType === "CUSTOM_PHYSICAL",
-      personalizationPlaceholder: newType === "CUSTOM_PHYSICAL" ? "കവറിൽ പ്രിന്റ് ചെയ്യേണ്ട പേര്" : undefined,
-    };
+      personalizationPlaceholder: newType === "CUSTOM_PHYSICAL" ? "Custom name to emboss on cover" : undefined,
+      badge: newType === "CUSTOM_PHYSICAL" ? "Custom Made" : newType === "DIGITAL" ? "Instant Download" : "Ready to Ship"
+    });
 
-    addProduct(prod);
     setFormSuccess(true);
+    setTimeout(() => {
+      setFormSuccess(false);
+      setActiveTab("products");
+    }, 1200);
+
+    // Reset fields
     setNewTitle("");
     setNewSubtitle("");
     setNewPrice("");
     setNewOriginalPrice("");
     setNewDescription("");
-    setTimeout(() => {
-      setFormSuccess(false);
-      setActiveTab("products");
-    }, 1500);
+    setNewImages(["https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80"]);
   };
 
-  // Handle Update Product from Modal
+  // Handle Save Edit
   const handleSaveEdit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
@@ -189,24 +219,24 @@ export default function AdminPage() {
 
   // Handle Delete Product
   const handleDelete = (id: string, title: string) => {
-    if (confirm(`"${title}" എന്ന പ്രൊഡക്റ്റ് സ്റ്റോറിൽ നിന്ന് ശാശ്വതമായി ഡിലീറ്റ് ചെയ്യണോ?`)) {
+    if (confirm(`Are you sure you want to permanently delete "${title}" from the store catalog?`)) {
       deleteProduct(id);
     }
   };
 
-  const filteredOrders = orders.filter((o) => {
-    if (filterStatus === "ALL") return true;
-    return o.fulfillmentStatus === filterStatus;
-  });
+  // Filter Orders
+  const filteredOrders = filterStatus === "ALL"
+    ? orders
+    : orders.filter((o) => o.fulfillmentStatus === filterStatus);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       
-      {/* Top Admin Header */}
-      <div className="bg-black text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
+      {/* Top Banner */}
+      <div className="bg-black text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0">
-            <Shield className="w-6 h-6 text-emerald-400" />
+          <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20">
+            <Shield className="w-8 h-8 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -218,7 +248,7 @@ export default function AdminPage() {
               </span>
             </div>
             <p className="text-xs text-neutral-400 mt-1">
-              കസ്റ്റമർ ഓർഡറുകൾ, പ്രിന്റ് ചെയ്യേണ്ട പേരുകൾ, സ്റ്റോക്ക് & പ്രൊഡക്റ്റ് മാനേജ്‌മെന്റ്
+              Order processing queue, custom name embossing details, shipping labels & catalog management
             </p>
           </div>
         </div>
@@ -229,7 +259,7 @@ export default function AdminPage() {
             className="px-3.5 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs text-white font-medium flex items-center gap-1.5 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            <span>കസ്റ്റമർ സൈറ്റ് കാണുക</span>
+            <span>View Customer Store</span>
           </Link>
           <button
             onClick={logoutAdmin}
@@ -252,7 +282,7 @@ export default function AdminPage() {
           }`}
         >
           <Package className="w-4 h-4" />
-          <span>ഓർഡറുകൾ & കസ്റ്റം പ്രിന്റിംഗ് ({orders.length})</span>
+          <span>Orders & Custom Printing ({orders.length})</span>
         </button>
 
         <button
@@ -264,7 +294,7 @@ export default function AdminPage() {
           }`}
         >
           <Edit3 className="w-4 h-4" />
-          <span>പ്രൊഡക്റ്റുകൾ എഡിറ്റ് & ഡിലീറ്റ് ({products.length})</span>
+          <span>Product Catalog ({products.length})</span>
         </button>
 
         <button
@@ -276,15 +306,15 @@ export default function AdminPage() {
           }`}
         >
           <Plus className="w-4 h-4" />
-          <span>പുതിയ പ്രൊഡക്റ്റ് ചേർക്കുക</span>
+          <span>Add New Product</span>
         </button>
       </div>
 
-      {/* TAB 1: ORDERS LIST (WITH CUSTOM PRINT NAME HIGHLIGHT) */}
+      {/* TAB 1: ORDERS LIST (WITH CUSTOM PRINT NAME HIGHLIGHT & SHIPPING LABEL PRINT) */}
       {activeTab === "orders" && (
         <div className="space-y-6">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-            <span className="text-neutral-400 font-semibold uppercase text-[10px]">ഫിൽട്ടർ:</span>
+            <span className="text-neutral-400 font-semibold uppercase text-[10px]">Filter Status:</span>
             {["ALL", "MAKING", "READY_TO_SHIP", "SHIPPED", "COMPLETED"].map((st) => (
               <button
                 key={st}
@@ -295,14 +325,14 @@ export default function AdminPage() {
                     : "bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50"
                 }`}
               >
-                {st === "ALL" ? "എല്ലാം" : st}
+                {st === "ALL" ? "All Orders" : st.replace(/_/g, " ")}
               </button>
             ))}
           </div>
 
           {filteredOrders.length === 0 ? (
             <div className="p-12 text-center bg-white rounded-2xl border border-neutral-200 text-xs text-neutral-500">
-              ഈ കാറ്റഗറിയിൽ ഓർഡറുകൾ ഒന്നും കണ്ടെത്തിയില്ല.
+              No orders found in this category.
             </div>
           ) : (
             <div className="space-y-6">
@@ -326,16 +356,16 @@ export default function AdminPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-neutral-700">വർക്ക്ഫ്ലോ സ്റ്റാറ്റസ്:</span>
+                      <span className="text-xs font-bold text-neutral-700">Workflow Status:</span>
                       <select
                         value={ord.fulfillmentStatus}
                         onChange={(e) => updateOrderStatus(ord.id, e.target.value as any)}
                         className="text-xs font-bold py-1.5 px-3 bg-white border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
                       >
-                        <option value="MAKING">🔨 നിർമ്മാണത്തിൽ (In Making)</option>
-                        <option value="READY_TO_SHIP">📦 പാക്ക് ചെയ്തു (Ready to Ship)</option>
-                        <option value="SHIPPED">🚚 കൊറിയർ അയച്ചു (Shipped)</option>
-                        <option value="COMPLETED">✅ കയ്യിലെത്തി (Delivered)</option>
+                        <option value="MAKING">🔨 In Making / Crafting</option>
+                        <option value="READY_TO_SHIP">📦 Packed & Ready to Ship</option>
+                        <option value="SHIPPED">🚚 Shipped / In Transit</option>
+                        <option value="COMPLETED">✅ Delivered to Customer</option>
                       </select>
                     </div>
                   </div>
@@ -345,7 +375,7 @@ export default function AdminPage() {
                     {/* Items */}
                     <div className="lg:col-span-7 space-y-3">
                       <h4 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                        ഓർഡർ ചെയ്ത സാധനങ്ങൾ ({ord.items.length})
+                        Order Items ({ord.items.length})
                       </h4>
 
                       {ord.items.map((item) => (
@@ -367,7 +397,7 @@ export default function AdminPage() {
                               {item.customText && (
                                 <div className="mt-2 p-3 bg-black text-white rounded-lg">
                                   <span className="text-[10px] uppercase tracking-widest text-neutral-300 block font-bold">
-                                    ✦ കവറിൽ പ്രിന്റ് ചെയ്യേണ്ട പേര് (NAME TO PRINT):
+                                    ✦ NAME TO EMBOSS / PRINT ON COVER:
                                   </span>
                                   <span className="font-serif text-base font-bold text-white block mt-1 tracking-wider">
                                     &ldquo;{item.customText}&rdquo;
@@ -385,10 +415,10 @@ export default function AdminPage() {
                       ))}
                     </div>
 
-                    {/* Customer & Shipping */}
-                    <div className="lg:col-span-5 bg-neutral-50 rounded-xl p-4 border border-neutral-200 space-y-2 text-xs">
+                    {/* Customer & Shipping Details & Label Printing */}
+                    <div className="lg:col-span-5 bg-neutral-50 rounded-xl p-4 border border-neutral-200 space-y-3 text-xs">
                       <h4 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                        കസ്റ്റമർ വിവരങ്ങളും വിലാസവും
+                        Customer & Shipping Information
                       </h4>
 
                       <div className="font-bold text-black text-sm">{ord.customerName}</div>
@@ -405,17 +435,38 @@ export default function AdminPage() {
                         <div className="pt-2 border-t border-neutral-200 text-neutral-700 space-y-0.5">
                           <div className="font-semibold text-black flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5" />
-                            <span>ഡെലിവറി വിലാസം:</span>
+                            <span>Delivery Address:</span>
                           </div>
                           <p>{ord.shippingAddress.addressLine}</p>
-                          <p>{ord.shippingAddress.city}, {ord.shippingAddress.state} - {ord.shippingAddress.pincode}</p>
+                          <p>{ord.shippingAddress.city}, {ord.shippingAddress.state} - <strong className="text-black font-mono">{ord.shippingAddress.pincode}</strong></p>
                         </div>
                       )}
 
                       <div className="pt-2 border-t border-neutral-200 flex justify-between font-bold text-black">
-                        <span>ലഭിച്ച തുക (Paid):</span>
+                        <span>Total Paid (Online):</span>
                         <span className="font-mono text-sm">₹{ord.totalAmount}</span>
                       </div>
+
+                      {/* PRINT SHIPPING LABEL BUTTON (WITH QR CODE) */}
+                      {ord.shippingAddress ? (
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedLabelOrder(ord);
+                              setIsLabelModalOpen(true);
+                            }}
+                            className="w-full py-2.5 px-3 bg-black hover:bg-neutral-800 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+                          >
+                            <Printer className="w-3.5 h-3.5" />
+                            <span>Print Shipping Label (with QR Code)</span>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="pt-2 text-[11px] text-neutral-500 italic bg-white p-2 rounded border border-neutral-200 text-center">
+                          Instant Digital Download (No shipping required)
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -430,14 +481,14 @@ export default function AdminPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500">
-              നിലവിലുള്ള എല്ലാ പ്രൊഡക്റ്റുകളും ({products.length})
+              Active Store Products ({products.length})
             </h3>
             <button
               onClick={() => setActiveTab("add_product")}
               className="px-3.5 py-2 bg-black text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>പുതിയ പ്രൊഡക്റ്റ് ചേർക്കുക</span>
+              <span>Add New Product</span>
             </button>
           </div>
 
@@ -477,7 +528,7 @@ export default function AdminPage() {
                     className="py-2 px-3 bg-neutral-100 hover:bg-neutral-200 text-black rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
-                    <span>എഡിറ്റ് (Edit)</span>
+                    <span>Edit</span>
                   </button>
 
                   <button
@@ -485,7 +536,7 @@ export default function AdminPage() {
                     className="py-2 px-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-red-200 cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>ഡിലീറ്റ് (Delete)</span>
+                    <span>Delete</span>
                   </button>
                 </div>
               </div>
@@ -499,43 +550,43 @@ export default function AdminPage() {
         <div className="bg-white rounded-2xl p-6 sm:p-8 border border-neutral-200 shadow-sm max-w-2xl mx-auto space-y-6">
           <div>
             <h3 className="font-sans font-black text-xl text-black uppercase tracking-wider">
-              പുതിയ പ്രൊഡക്റ്റ് ചേർക്കുക
+              Add New Product to Store
             </h3>
             <p className="text-xs text-neutral-500 mt-1">
-              ഡയറികൾ, ടൂ-ഡൂ ലിസ്റ്റുകൾ, ബുക്ക്മാർക്കുകൾ, അല്ലെങ്കിൽ ഡിജിറ്റൽ പ്രിന്റബിൾസ് ചേർക്കാം
+              Publish custom diaries, desk pads, bookmarks, or downloadable printables
             </p>
           </div>
 
           {formSuccess && (
             <div className="p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold text-center">
-              ✅ പ്രൊഡക്റ്റ് വിജയകരമായി സ്റ്റോറിലേക്ക് ചേർത്തു!
+              ✅ Product successfully added to catalog!
             </div>
           )}
 
           <form onSubmit={handleCreateProduct} className="space-y-4">
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                പ്രൊഡക്റ്റ് പേര് (Title)*
+                Product Title *
               </label>
               <input
                 type="text"
                 required
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="ഉദാ: Custom Minimal Daily Diary"
+                placeholder="e.g., Custom Minimal Daily Diary"
                 className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
               />
             </div>
 
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                ഉപശീർഷകം (Subtitle)
+                Subtitle
               </label>
               <input
                 type="text"
                 value={newSubtitle}
                 onChange={(e) => setNewSubtitle(e.target.value)}
-                placeholder="ഹാൻഡ്ക്രാഫ്റ്റഡ് ലെതർ ഡയറി - പേര് പ്രിന്റ് ചെയ്തു നൽകുന്നു"
+                placeholder="Handcrafted Leather Diary with Custom Name Embossing"
                 className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
               />
             </div>
@@ -543,7 +594,7 @@ export default function AdminPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  വില (Price in ₹)*
+                  Price (₹) *
                 </label>
                 <input
                   type="number"
@@ -557,7 +608,7 @@ export default function AdminPage() {
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  യഥാർത്ഥ വില (Original Price in ₹)
+                  Original MRP (₹)
                 </label>
                 <input
                   type="number"
@@ -572,7 +623,7 @@ export default function AdminPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  കാറ്റഗറി (Category)
+                  Category
                 </label>
                 <select
                   value={newCategory}
@@ -589,16 +640,16 @@ export default function AdminPage() {
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  പ്രൊഡക്റ്റ് ടൈപ്പ് (Product Type)
+                  Product Type
                 </label>
                 <select
                   value={newType}
                   onChange={(e) => setNewType(e.target.value as any)}
                   className="w-full text-xs p-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
                 >
-                  <option value="CUSTOM_PHYSICAL">✨ Custom Physical (പേര് പ്രിന്റ് ചെയ്യുന്നത്)</option>
-                  <option value="READY_STOCK">📦 Ready Stock (സ്റ്റോക്ക് ഉള്ളത്)</option>
-                  <option value="DIGITAL">⚡ Digital (Instant PDF ഡൗൺലോഡ്)</option>
+                  <option value="CUSTOM_PHYSICAL">✨ Custom Physical (With Name Embossing)</option>
+                  <option value="READY_STOCK">📦 Ready Stock (Instant Dispatch)</option>
+                  <option value="DIGITAL">⚡ Digital (Instant Printable PDF)</option>
                 </select>
               </div>
             </div>
@@ -606,7 +657,7 @@ export default function AdminPage() {
             {newType === "READY_STOCK" && (
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  സ്റ്റോക്ക് അളവ് (Stock Count)
+                  Available Stock Count
                 </label>
                 <input
                   type="number"
@@ -620,13 +671,13 @@ export default function AdminPage() {
             {/* MULTIPLE IMAGES SECTION */}
             <div className="space-y-2 pt-2 border-t border-neutral-200">
               <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-                പ്രൊഡക്റ്റ് ഇമേജുകൾ (Product Images)
+                Product Images
               </label>
 
               <div className="flex gap-2">
                 <input
                   type="url"
-                  placeholder="Image URL..."
+                  placeholder="Paste Image URL..."
                   value={tempImageUrl}
                   onChange={(e) => setTempImageUrl(e.target.value)}
                   className="flex-1 text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
@@ -663,13 +714,13 @@ export default function AdminPage() {
 
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                വിവരണം (Description)
+                Description
               </label>
               <textarea
                 rows={3}
                 value={newDescription}
                 onChange={(e) => setNewDescription(e.target.value)}
-                placeholder="ഈ പ്രൊഡക്റ്റിന്റെ പ്രത്യേകതകൾ..."
+                placeholder="Product description, material details, and features..."
                 className="w-full text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
               />
             </div>
@@ -678,7 +729,7 @@ export default function AdminPage() {
               type="submit"
               className="w-full py-3.5 bg-black hover:bg-neutral-800 text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer"
             >
-              പ്രൊഡക്റ്റ് പബ്ലിഷ് ചെയ്യുക (Publish to Store)
+              Publish Product to Store
             </button>
           </form>
         </div>
@@ -690,7 +741,7 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-neutral-200 my-8">
             <div className="flex items-center justify-between pb-3 border-b border-neutral-200">
               <h3 className="font-bold text-base text-black uppercase tracking-wider">
-                പ്രൊഡക്റ്റ് വിവരങ്ങൾ എഡിറ്റ് ചെയ്യുക
+                Edit Product Details
               </h3>
               <button
                 onClick={() => setEditingProduct(null)}
@@ -703,7 +754,7 @@ export default function AdminPage() {
             <form onSubmit={handleSaveEdit} className="space-y-4 pt-4">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  ടൈറ്റിൽ (Title)*
+                  Title *
                 </label>
                 <input
                   type="text"
@@ -716,7 +767,7 @@ export default function AdminPage() {
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  ഉപശീർഷകം (Subtitle)
+                  Subtitle
                 </label>
                 <input
                   type="text"
@@ -729,7 +780,7 @@ export default function AdminPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                    വില (Price in ₹)*
+                    Price (₹) *
                   </label>
                   <input
                     type="number"
@@ -742,7 +793,7 @@ export default function AdminPage() {
 
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                    യഥാർത്ഥ വില (Original Price in ₹)
+                    Original Price (₹)
                   </label>
                   <input
                     type="number"
@@ -756,7 +807,7 @@ export default function AdminPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                    കാറ്റഗറി (Category)
+                    Category
                   </label>
                   <select
                     value={editingProduct.category}
@@ -773,16 +824,16 @@ export default function AdminPage() {
 
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                    പ്രൊഡക്റ്റ് ടൈപ്പ് (Type)
+                    Product Type
                   </label>
                   <select
                     value={editingProduct.type}
                     onChange={(e) => setEditingProduct({ ...editingProduct, type: e.target.value as any, allowsPersonalization: e.target.value === "CUSTOM_PHYSICAL" })}
                     className="w-full text-xs p-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
                   >
-                    <option value="CUSTOM_PHYSICAL">✨ Custom Physical (പേര് പ്രിന്റ് ചെയ്യുന്നത്)</option>
-                    <option value="READY_STOCK">📦 Ready Stock (സ്റ്റോക്ക് ഉള്ളത്)</option>
-                    <option value="DIGITAL">⚡ Digital (Instant PDF ഡൗൺലോഡ്)</option>
+                    <option value="CUSTOM_PHYSICAL">✨ Custom Physical (With Name Embossing)</option>
+                    <option value="READY_STOCK">📦 Ready Stock (Instant Dispatch)</option>
+                    <option value="DIGITAL">⚡ Digital (Instant Printable PDF)</option>
                   </select>
                 </div>
               </div>
@@ -790,7 +841,7 @@ export default function AdminPage() {
               {editingProduct.type === "READY_STOCK" && (
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                    സ്റ്റോക്ക് അളവ് (Stock Count)
+                    Available Stock Count
                   </label>
                   <input
                     type="number"
@@ -804,7 +855,7 @@ export default function AdminPage() {
               {/* Edit Images List */}
               <div className="space-y-2 pt-2 border-t border-neutral-200">
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-                  ഇമേജുകൾ (Images):
+                  Product Images:
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -854,7 +905,7 @@ export default function AdminPage() {
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  വിവരണം (Description)
+                  Description
                 </label>
                 <textarea
                   rows={3}
@@ -883,6 +934,13 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+
+      {/* SHIPPING LABEL MODAL (COMPACT A6/4x6 WITH REAL-TIME QR CODE) */}
+      <ShippingLabelModal
+        order={selectedLabelOrder}
+        isOpen={isLabelModalOpen}
+        onClose={() => setIsLabelModalOpen(false)}
+      />
 
     </div>
   );

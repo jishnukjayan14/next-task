@@ -94,7 +94,7 @@ export default function ProductDetailPage() {
                 <Download className="w-5 h-5 text-black" />
                 <div>
                   <h4 className="text-xs font-bold text-black uppercase">Sample Preview</h4>
-                  <p className="text-[11px] text-neutral-500">ഫ്രീ പ്രിവ്യൂ ഷീറ്റ് ഡൗൺലോഡ് ചെയ്തു പരിശോധിക്കാം</p>
+                  <p className="text-[11px] text-neutral-500">Download a free sample preview sheet to inspect layout</p>
                 </div>
               </div>
               <button
@@ -142,7 +142,7 @@ export default function ProductDetailPage() {
           {product.coverColors && product.coverColors.length > 0 && (
             <div className="space-y-1.5">
               <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-                കവർ കളർ: <span className="font-normal text-neutral-500">{selectedColor}</span>
+                Cover Color: <span className="font-normal text-neutral-500">{selectedColor}</span>
               </label>
               <div className="flex gap-2">
                 {product.coverColors.map((color) => (
@@ -179,7 +179,7 @@ export default function ProductDetailPage() {
               />
               {customError && (
                 <p className="text-xs text-red-600 font-semibold bg-red-50 p-2 rounded-lg border border-red-200">
-                  ⚠️ ദയവായി കവറിൽ പ്രിന്റ് ചെയ്യേണ്ട പേര് നൽകുക.
+                  ⚠️ Please enter a custom name to print on the cover.
                 </p>
               )}
             </div>

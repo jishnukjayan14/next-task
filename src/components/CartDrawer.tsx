@@ -46,9 +46,9 @@ export const CartDrawer: React.FC = () => {
                 <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400">
                   <ShoppingBag className="w-6 h-6" />
                 </div>
-                <h3 className="font-bold text-sm text-black uppercase">കാർട്ട് ഒഴിഞ്ഞുകിടക്കുന്നു</h3>
+                <h3 className="font-bold text-sm text-black uppercase">Your Cart is Empty</h3>
                 <p className="text-xs text-neutral-500 max-w-xs">
-                  പ്ലാനറുകളും കസ്റ്റം ഡയറികളും നിങ്ങളുടെ കാർട്ടിലേക്ക് ചേർക്കൂ!
+                  Discover handcrafted diaries and productivity planners to get started!
                 </p>
               </div>
             ) : (
@@ -137,7 +137,7 @@ export const CartDrawer: React.FC = () => {
                 onClick={() => setIsCartOpen(false)}
                 className="w-full py-3.5 px-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider rounded-lg flex items-center justify-center gap-2 shadow-md transition-all"
               >
-                <span>Checkout (ചെക്ക്ഔട്ട്)</span>
+                <span>Proceed to Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

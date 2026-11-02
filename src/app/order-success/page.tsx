@@ -17,9 +17,9 @@ function OrderSuccessContent() {
   if (!order) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-xl font-bold">ഓർഡർ കണ്ടെത്താനായില്ല.</h2>
+        <h2 className="text-xl font-bold">Order not found.</h2>
         <Link href="/" className="mt-4 inline-block text-xs text-black underline">
-          ഹോംപേജിലേക്ക് പോകുക
+          Return to Store
         </Link>
       </div>
     );
@@ -47,7 +47,7 @@ function OrderSuccessContent() {
         </div>
 
         <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200 max-w-md mx-auto text-xs text-neutral-600">
-          കൺഫർമേഷൻ വിവരങ്ങൾ <strong>{order.customerEmail}</strong> എന്ന വിലാസത്തിലേക്ക് അയച്ചിട്ടുണ്ട്.
+          Order confirmation has been sent to <strong>{order.customerEmail}</strong>.
         </div>
       </div>
 
@@ -63,7 +63,7 @@ function OrderSuccessContent() {
                 Instant Digital Downloads
               </h2>
               <p className="text-xs text-neutral-500">
-                താഴെയുള്ള ബട്ടണിൽ ക്ലിക്ക് ചെയ്ത് ഇപ്പോൾ തന്നെ PDF ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാം:
+                Click below to download your high-resolution printable PDF files immediately:
               </p>
             </div>
           </div>
@@ -112,7 +112,7 @@ function OrderSuccessContent() {
                   Fulfillment Status
                 </h2>
                 <p className="text-xs text-neutral-500">
-                  സ്റ്റാറ്റസ്: <span className="font-bold text-black">{order.fulfillmentStatus}</span>
+                  Status: <span className="font-bold text-black">{order.fulfillmentStatus}</span>
                 </p>
               </div>
             </div>
@@ -162,7 +162,7 @@ function OrderSuccessContent() {
 
 export default function OrderSuccessPage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center text-xs">ലോഡ് ചെയ്യുന്നു...</div>}>
+    <Suspense fallback={<div className="p-12 text-center text-xs">Loading order details...</div>}>
       <OrderSuccessContent />
     </Suspense>
   );
