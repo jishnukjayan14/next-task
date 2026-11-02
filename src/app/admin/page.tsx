@@ -579,7 +579,7 @@ export default function AdminPage() {
                 className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-xs p-4 flex flex-col justify-between space-y-4"
               >
                 <div>
-                  <div className="aspect-4/3 rounded-xl overflow-hidden bg-neutral-100 relative mb-3">
+                  <div className="aspect-[4/5] rounded-xl overflow-hidden bg-neutral-100 relative mb-3">
                     <img src={p.imageUrl} alt={p.title} className="w-full h-full object-cover" />
                     <span className="absolute top-2 left-2 bg-black text-white text-[10px] font-bold px-2 py-0.5 rounded">
                       {p.type}
@@ -625,9 +625,9 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* TAB 3: ADD NEW PRODUCT (WITH MULTI-IMAGE SUPPORT) */}
+      {/* TAB 3: ADD NEW PRODUCT (WITH MULTI-IMAGE SUPPORT & LIVE PREVIEW) */}
       {activeTab === "add_product" && (
-        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-neutral-200 shadow-sm max-w-2xl mx-auto space-y-6">
+        <div className="max-w-6xl mx-auto space-y-6">
           <div>
             <h3 className="font-sans font-black text-xl text-black uppercase tracking-wider">
               Add New Product to Store
@@ -643,248 +643,355 @@ export default function AdminPage() {
             </div>
           )}
 
-          <form onSubmit={handleCreateProduct} className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                Product Title *
-              </label>
-              <input
-                type="text"
-                required
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="e.g., Custom Minimal Daily Diary"
-                className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                Subtitle
-              </label>
-              <input
-                type="text"
-                value={newSubtitle}
-                onChange={(e) => setNewSubtitle(e.target.value)}
-                placeholder="Handcrafted Leather Diary with Custom Name Embossing"
-                className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  Price (₹) *
-                </label>
-                <input
-                  type="number"
-                  required
-                  value={newPrice}
-                  onChange={(e) => setNewPrice(e.target.value)}
-                  placeholder="399"
-                  className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  Original MRP (₹)
-                </label>
-                <input
-                  type="number"
-                  value={newOriginalPrice}
-                  onChange={(e) => setNewOriginalPrice(e.target.value)}
-                  placeholder="599"
-                  className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  Category
-                </label>
-                <select
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value as any)}
-                  className="w-full text-xs p-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
-                >
-                  <option value="Diaries">Diaries</option>
-                  <option value="Planners">Planners</option>
-                  <option value="Trackers">Trackers</option>
-                  <option value="Bookmarks">Bookmarks</option>
-                  <option value="To-Do Lists">To-Do Lists</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  Product Type
-                </label>
-                <select
-                  value={newType}
-                  onChange={(e) => setNewType(e.target.value as any)}
-                  className="w-full text-xs p-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
-                >
-                  <option value="CUSTOM_PHYSICAL">✨ Custom Physical (With Name Embossing)</option>
-                  <option value="READY_STOCK">📦 Ready Stock (Instant Dispatch)</option>
-                  <option value="DIGITAL">⚡ Digital (Instant Printable PDF)</option>
-                </select>
-              </div>
-            </div>
-
-            {newType === "READY_STOCK" && (
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                  Available Stock Count
-                </label>
-                <input
-                  type="number"
-                  value={newStock}
-                  onChange={(e) => setNewStock(e.target.value)}
-                  className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
-                />
-              </div>
-            )}
-
-            {/* MULTIPLE IMAGES SECTION */}
-            <div className="space-y-3 pt-3 border-t border-neutral-200">
-              <div className="flex items-center justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* Form Column */}
+            <div className="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-8 border border-neutral-200 shadow-sm space-y-6">
+              <form onSubmit={handleCreateProduct} className="space-y-4">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-800">
-                    Product Images ({newImages.length})
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                    Product Title *
                   </label>
-                  <p className="text-[11px] text-neutral-500">
-                    Upload photos directly from your phone or computer. The first image will be the main display cover.
-                  </p>
+                  <input
+                    type="text"
+                    required
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="e.g., Custom Minimal Daily Diary"
+                    className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
+                  />
                 </div>
-                {newImages.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setNewImages([])}
-                    className="text-[11px] text-red-600 hover:underline font-semibold cursor-pointer"
-                  >
-                    Clear All Photos
-                  </button>
-                )}
-              </div>
 
-              {/* DEVICE UPLOAD BUTTON / DROPZONE */}
-              <div className="border-2 border-dashed border-neutral-300 hover:border-black rounded-xl p-4 text-center transition-colors bg-neutral-50/60">
-                <input
-                  type="file"
-                  id="new-product-file-upload"
-                  accept="image/*"
-                  multiple
-                  onChange={handleDeviceUpload}
-                  className="hidden"
-                />
-                <label
-                  htmlFor="new-product-file-upload"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-black hover:bg-neutral-800 text-white rounded-lg text-xs font-bold cursor-pointer transition-all shadow-xs"
-                >
-                  {isUploadingImages ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      <span>Processing Photos...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-4 h-4 text-white" />
-                      <span>Choose Photos from Device</span>
-                    </>
-                  )}
-                </label>
-                <p className="text-[10px] text-neutral-500 mt-2">
-                  Select 1 or multiple images from your device (JPG, PNG, WEBP). Photos are automatically optimized.
-                </p>
-              </div>
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                    Subtitle
+                  </label>
+                  <input
+                    type="text"
+                    value={newSubtitle}
+                    onChange={(e) => setNewSubtitle(e.target.value)}
+                    placeholder="Handcrafted Leather Diary with Custom Name Embossing"
+                    className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
+                  />
+                </div>
 
-              {/* OR PASTE URL COLLAPSIBLE / SECONDARY */}
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="url"
-                  placeholder="Or paste an image web URL..."
-                  value={tempImageUrl}
-                  onChange={(e) => setTempImageUrl(e.target.value)}
-                  className="flex-1 text-xs px-3 py-2 bg-white border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddImage}
-                  className="px-3.5 py-2 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 rounded-lg text-xs font-bold cursor-pointer transition-colors"
-                >
-                  + Add URL
-                </button>
-              </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                      Price (₹) *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={newPrice}
+                      onChange={(e) => setNewPrice(e.target.value)}
+                      placeholder="399"
+                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
+                    />
+                  </div>
 
-              {/* PREVIEW GALLERY */}
-              {newImages.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2">
-                  {newImages.map((img, idx) => (
-                    <div
-                      key={idx}
-                      className={`relative aspect-square rounded-xl overflow-hidden border-2 bg-neutral-100 group shadow-xs ${
-                        idx === 0 ? "border-black ring-2 ring-black/20" : "border-neutral-200"
-                      }`}
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                      Original MRP (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={newOriginalPrice}
+                      onChange={(e) => setNewOriginalPrice(e.target.value)}
+                      placeholder="599"
+                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                      Category
+                    </label>
+                    <select
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value as any)}
+                      className="w-full text-xs p-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
                     >
-                      <img src={img} alt={`preview-${idx}`} className="w-full h-full object-cover" />
-                      
-                      {/* Top Delete Button */}
+                      <option value="Diaries">Diaries</option>
+                      <option value="Planners">Planners</option>
+                      <option value="Trackers">Trackers</option>
+                      <option value="Bookmarks">Bookmarks</option>
+                      <option value="To-Do Lists">To-Do Lists</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                      Product Type
+                    </label>
+                    <select
+                      value={newType}
+                      onChange={(e) => setNewType(e.target.value as any)}
+                      className="w-full text-xs p-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
+                    >
+                      <option value="CUSTOM_PHYSICAL">✨ Custom Physical (With Name Embossing)</option>
+                      <option value="READY_STOCK">📦 Ready Stock (Instant Dispatch)</option>
+                      <option value="DIGITAL">⚡ Digital (Instant Printable PDF)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {newType === "READY_STOCK" && (
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                      Available Stock Count
+                    </label>
+                    <input
+                      type="number"
+                      value={newStock}
+                      onChange={(e) => setNewStock(e.target.value)}
+                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
+                    />
+                  </div>
+                )}
+
+                {/* MULTIPLE IMAGES SECTION */}
+                <div className="space-y-3 pt-3 border-t border-neutral-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-800">
+                        Product Photos ({newImages.length})
+                      </label>
+                      <p className="text-[11px] text-neutral-500">
+                        Upload photos from your computer or phone. First photo is the main storefront cover.
+                      </p>
+                    </div>
+                    {newImages.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => handleRemoveImage(idx)}
-                        className="absolute top-1 right-1 bg-black/70 hover:bg-red-600 text-white rounded-full p-1 transition-colors cursor-pointer"
-                        title="Delete photo"
+                        onClick={() => setNewImages([])}
+                        className="text-[11px] text-red-600 hover:underline font-semibold cursor-pointer"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        Clear All Photos
                       </button>
+                    )}
+                  </div>
 
-                      {/* Main Cover Badge or Set As Main Button */}
-                      {idx === 0 ? (
-                        <span className="absolute bottom-1 inset-x-1 bg-black text-white text-[9px] font-bold text-center py-0.5 rounded shadow-xs uppercase tracking-wider">
-                          Main Cover
-                        </span>
+                  {/* DEVICE UPLOAD BUTTON / DROPZONE */}
+                  <div className="border-2 border-dashed border-neutral-300 hover:border-black rounded-xl p-4 text-center transition-colors bg-neutral-50/60">
+                    <input
+                      type="file"
+                      id="new-product-file-upload"
+                      accept="image/*"
+                      multiple
+                      onChange={handleDeviceUpload}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="new-product-file-upload"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-black hover:bg-neutral-800 text-white rounded-lg text-xs font-bold cursor-pointer transition-all shadow-xs"
+                    >
+                      {isUploadingImages ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-white" />
+                          <span>Processing Photos...</span>
+                        </>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleSetMainImage(idx)}
-                          className="absolute bottom-1 inset-x-1 bg-white/95 hover:bg-white text-black text-[9px] font-bold text-center py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity shadow-xs cursor-pointer"
-                        >
-                          Set as Main
-                        </button>
+                        <>
+                          <Upload className="w-4 h-4 text-white" />
+                          <span>Choose Photos from Device</span>
+                        </>
+                      )}
+                    </label>
+                    <p className="text-[10px] text-neutral-500 mt-2">
+                      Select 1 or multiple photos from your device (JPG, PNG, WEBP).
+                    </p>
+                  </div>
+
+                  {/* OR PASTE URL COLLAPSIBLE / SECONDARY */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <input
+                      type="url"
+                      placeholder="Or paste an image web URL..."
+                      value={tempImageUrl}
+                      onChange={(e) => setTempImageUrl(e.target.value)}
+                      className="flex-1 text-xs px-3 py-2 bg-white border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddImage}
+                      className="px-3.5 py-2 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 rounded-lg text-xs font-bold cursor-pointer transition-colors"
+                    >
+                      + Add URL
+                    </button>
+                  </div>
+
+                  {/* PREVIEW GALLERY WITH MAIN COVER PROMINENT */}
+                  {newImages.length > 0 ? (
+                    <div className="space-y-3 pt-2">
+                      <div className="flex flex-col sm:flex-row gap-3.5 p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl items-start">
+                        <div className="w-32 sm:w-36 aspect-[4/5] rounded-xl overflow-hidden border-2 border-black relative shrink-0 shadow-xs">
+                          <img src={newImages[0]} alt="main-cover" className="w-full h-full object-cover" />
+                          <span className="absolute bottom-1 inset-x-1 bg-black text-white text-[9px] font-bold text-center py-0.5 rounded shadow-xs uppercase tracking-wider">
+                            ★ Main Cover
+                          </span>
+                        </div>
+
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-black uppercase tracking-wider">
+                              Additional Views ({newImages.length - 1})
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(0)}
+                              className="text-[10px] text-red-600 hover:underline font-semibold cursor-pointer"
+                            >
+                              Remove Main Photo
+                            </button>
+                          </div>
+                          <p className="text-[11px] text-neutral-500">
+                            These appear inside the product detail page. Click &quot;Make Main&quot; to switch any photo to the front cover.
+                          </p>
+
+                          {newImages.length > 1 ? (
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              {newImages.slice(1).map((img, i) => {
+                                const actualIdx = i + 1;
+                                return (
+                                  <div
+                                    key={actualIdx}
+                                    className="relative w-20 h-24 rounded-lg overflow-hidden border border-neutral-300 group shadow-2xs"
+                                  >
+                                    <img src={img} alt={`sec-${actualIdx}`} className="w-full h-full object-cover" />
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveImage(actualIdx)}
+                                      className="absolute top-1 right-1 bg-black/70 hover:bg-red-600 text-white rounded-full p-0.5 transition-colors cursor-pointer"
+                                      title="Delete photo"
+                                    >
+                                      <X className="w-3 h-3" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSetMainImage(actualIdx)}
+                                      className="absolute bottom-1 inset-x-1 bg-white/95 hover:bg-white text-black text-[8px] font-bold text-center py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-xs"
+                                    >
+                                      Make Main
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-neutral-400 italic pt-1">
+                              No additional gallery photos yet. You can upload more photos to show inside the product page.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-neutral-100 border border-neutral-200 rounded-lg text-xs text-neutral-600 text-center">
+                      📸 No photos added yet. Click <strong>&quot;Choose Photos from Device&quot;</strong> above to upload images for this product.
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={newDescription}
+                    onChange={(e) => setNewDescription(e.target.value)}
+                    placeholder="Product description, material details, and features..."
+                    className="w-full text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-black hover:bg-neutral-800 text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer"
+                >
+                  Publish Product to Store
+                </button>
+              </form>
+            </div>
+
+            {/* Live Storefront Card Preview Column */}
+            <div className="lg:col-span-5 space-y-3 lg:sticky lg:top-24">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-700">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>Live Store Card Preview</span>
+              </div>
+              <p className="text-[11px] text-neutral-500">
+                This is exactly how your product card and main photo will look to customers on the website:
+              </p>
+
+              <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-md max-w-sm mx-auto">
+                {/* Image */}
+                <div className="block relative aspect-[4/5] overflow-hidden bg-neutral-100">
+                  <img
+                    src={newImages[0] || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80"}
+                    alt="preview"
+                    className="w-full h-full object-cover"
+                  />
+
+                  {/* Badge */}
+                  <div className="absolute top-2.5 left-2.5">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-black text-white px-2 py-0.5 rounded shadow-xs">
+                      {newType === "CUSTOM_PHYSICAL" ? "Custom Name" : newType === "DIGITAL" ? "Instant PDF" : "Ready Stock"}
+                    </span>
+                  </div>
+
+                  {newImages.length > 1 && (
+                    <div className="absolute top-2.5 right-2.5 bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded shadow-xs flex items-center gap-1">
+                      <ImageIcon className="w-3 h-3 text-neutral-300" />
+                      <span>{newImages.length} Photos</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="p-4">
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-1">
+                    {newCategory}
+                  </div>
+                  <h4 className="font-sans font-bold text-sm text-black line-clamp-1">
+                    {newTitle || "Product Title Preview"}
+                  </h4>
+                  <p className="text-xs text-neutral-500 mt-1 line-clamp-2 leading-relaxed">
+                    {newSubtitle || "Subtitle or product description will be displayed here."}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-3 mt-3 border-t border-neutral-100">
+                    <div>
+                      <span className="text-base font-bold text-black font-mono">
+                        ₹{newPrice || "0"}
+                      </span>
+                      {newOriginalPrice && (
+                        <span className="text-xs text-neutral-400 line-through ml-1.5 font-mono">
+                          ₹{newOriginalPrice}
+                        </span>
                       )}
                     </div>
-                  ))}
+                    <span className="px-3 py-1.5 bg-black text-white rounded text-[11px] font-bold uppercase tracking-wider">
+                      {newType === "CUSTOM_PHYSICAL" ? "Customize" : newType === "DIGITAL" ? "Download" : "Add to Cart"}
+                    </span>
+                  </div>
                 </div>
-              ) : (
-                <div className="p-3 bg-neutral-100 border border-neutral-200 rounded-lg text-xs text-neutral-600 text-center">
-                  📸 No photos added yet. Click <strong>&quot;Choose Photos from Device&quot;</strong> above to upload images for this product.
+              </div>
+
+              <div className="p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-[11px] text-neutral-600 space-y-1">
+                <div className="font-bold text-black flex items-center gap-1">
+                  <span>💡 Note for Multi-Photo Products:</span>
                 </div>
-              )}
+                <p>
+                  Only this <strong>Main Cover Photo</strong> is shown on the storefront card. When customers click to open the product page, all <strong>{newImages.length || 1} photos</strong> will be presented in an interactive high-resolution gallery!
+                </p>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                Description
-              </label>
-              <textarea
-                rows={3}
-                value={newDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
-                placeholder="Product description, material details, and features..."
-                className="w-full text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-3.5 bg-black hover:bg-neutral-800 text-white font-bold rounded-lg text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer"
-            >
-              Publish Product to Store
-            </button>
-          </form>
+          </div>
         </div>
       )}
 
@@ -1074,11 +1181,11 @@ export default function AdminPage() {
                 </div>
 
                 {/* Preview Cards with Make Main and Delete */}
-                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 pt-1">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 pt-1">
                   {(editingProduct.images || [editingProduct.imageUrl]).map((img, idx) => (
                     <div
                       key={idx}
-                      className={`relative aspect-square rounded-lg overflow-hidden border-2 bg-neutral-100 group shadow-xs ${
+                      className={`relative aspect-[4/5] rounded-xl overflow-hidden border-2 bg-neutral-100 group shadow-xs ${
                         idx === 0 ? "border-black ring-1 ring-black/20" : "border-neutral-200"
                       }`}
                     >
@@ -1101,14 +1208,14 @@ export default function AdminPage() {
                       </button>
 
                       {idx === 0 ? (
-                        <span className="absolute bottom-0.5 inset-x-0.5 bg-black text-white text-[8px] font-bold text-center py-0.5 rounded uppercase">
-                          Main
+                        <span className="absolute bottom-1 inset-x-1 bg-black text-white text-[9px] font-bold text-center py-0.5 rounded uppercase">
+                          ★ Main Cover
                         </span>
                       ) : (
                         <button
                           type="button"
                           onClick={() => handleSetEditMainImage(idx)}
-                          className="absolute bottom-0.5 inset-x-0.5 bg-white/95 hover:bg-white text-black text-[8px] font-bold text-center py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-xs"
+                          className="absolute bottom-1 inset-x-1 bg-white/95 hover:bg-white text-black text-[9px] font-bold text-center py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-xs"
                         >
                           Make Main
                         </button>

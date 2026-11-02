@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Product } from "@/data/products";
 import { useStore } from "@/context/StoreContext";
-import { Sparkles, Download, Package, ArrowUpRight } from "lucide-react";
+import { Sparkles, Download, Package, ArrowUpRight, Image as ImageIcon } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -26,7 +26,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div className="group bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-xs hover:border-black transition-all duration-300 flex flex-col justify-between">
       <div>
         {/* Image & Badges */}
-        <Link href={`/product/${product.id}`} className="block relative aspect-4/3 overflow-hidden bg-neutral-100">
+        <Link href={`/product/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-neutral-100">
           <img
             src={product.imageUrl}
             alt={product.title}
@@ -36,24 +36,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {/* Type Badge */}
           <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
             {product.type === "CUSTOM_PHYSICAL" && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-black text-white px-2 py-0.5 rounded">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-black text-white px-2 py-0.5 rounded shadow-xs">
                 <Sparkles className="w-2.5 h-2.5" />
                 Custom Name
               </span>
             )}
             {product.type === "DIGITAL" && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-neutral-900 text-white px-2 py-0.5 rounded">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-neutral-900 text-white px-2 py-0.5 rounded shadow-xs">
                 <Download className="w-2.5 h-2.5" />
                 Instant PDF
               </span>
             )}
             {product.type === "READY_STOCK" && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-white text-black border border-black px-2 py-0.5 rounded">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-white text-black border border-black px-2 py-0.5 rounded shadow-xs">
                 <Package className="w-2.5 h-2.5" />
                 Ready Stock
               </span>
             )}
           </div>
+
+          {/* Multiple Photos indicator badge */}
+          {product.images && product.images.length > 1 && (
+            <div className="absolute top-2.5 right-2.5 bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded shadow-xs flex items-center gap-1">
+              <ImageIcon className="w-3 h-3 text-neutral-300" />
+              <span>{product.images.length} Photos</span>
+            </div>
+          )}
 
           <div className="absolute bottom-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white p-2 rounded-lg shadow-sm">
             <ArrowUpRight className="w-3.5 h-3.5" />

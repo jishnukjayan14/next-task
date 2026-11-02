@@ -18,6 +18,13 @@ export default function ProductDetailPage() {
   const allImages = product.images && product.images.length > 0 ? product.images : [product.imageUrl];
   const [activeImage, setActiveImage] = useState(allImages[0]);
 
+  // Ensure active image always defaults to main photo when opening product
+  React.useEffect(() => {
+    if (allImages[0]) {
+      setActiveImage(allImages[0]);
+    }
+  }, [product.id]);
+
   const [quantity, setQuantity] = useState(1);
   const [customText, setCustomText] = useState("");
   const [selectedColor, setSelectedColor] = useState(
@@ -54,16 +61,16 @@ export default function ProductDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
         {/* Left Column: Image Gallery */}
-        <div className="lg:col-span-6 space-y-3">
+        <div className="lg:col-span-6 space-y-4">
           {/* Main Large Image */}
-          <div className="rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-200 aspect-4/3 relative shadow-xs">
+          <div className="rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-200 aspect-[4/5] relative shadow-sm">
             <img
               src={activeImage}
               alt={product.title}
               className="w-full h-full object-cover transition-all duration-300"
             />
             {product.badge && (
-              <span className="absolute top-3 left-3 bg-black text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
+              <span className="absolute top-3 left-3 bg-black text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-xs">
                 {product.badge}
               </span>
             )}
@@ -71,19 +78,26 @@ export default function ProductDetailPage() {
 
           {/* Multiple Image Thumbnails */}
           {allImages.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {allImages.map((img, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setActiveImage(img)}
-                  className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
-                    activeImage === img ? "border-black ring-1 ring-black" : "border-neutral-200 opacity-70 hover:opacity-100"
-                  }`}
-                >
-                  <img src={img} alt={`thumb-${idx}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
+            <div className="space-y-2 pt-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 block">
+                Product Views ({allImages.length} Photos):
+              </span>
+              <div className="flex gap-2.5 overflow-x-auto pb-2">
+                {allImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImage(img)}
+                    className={`w-20 h-20 sm:w-22 sm:h-22 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
+                      activeImage === img
+                        ? "border-black ring-2 ring-black/20 scale-102"
+                        : "border-neutral-200 opacity-70 hover:opacity-100 hover:border-neutral-400"
+                    }`}
+                  >
+                    <img src={img} alt={`thumb-${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
