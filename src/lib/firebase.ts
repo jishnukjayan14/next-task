@@ -27,6 +27,11 @@ const firebaseConfig = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
+// Helper to recursively remove undefined fields so Firestore setDoc never throws an error
+export const cleanForFirestore = <T>(obj: T): T => {
+  return JSON.parse(JSON.stringify(obj));
+};
+
 /**
  * Real-time listener for Products collection
  */
@@ -72,10 +77,10 @@ export const seedInitialProducts = async () => {
   try {
     const colRef = collection(db, "products");
     const existing = await getDocs(colRef);
-    if (!existing.empty) return;
+    if (!existing.empty && existing.size >= INITIAL_PRODUCTS.length) return;
 
     for (const prod of INITIAL_PRODUCTS) {
-      await setDoc(doc(db, "products", prod.id), prod);
+      await setDoc(doc(db, "products", prod.id), cleanForFirestore(prod), { merge: true });
     }
   } catch (err) {
     console.warn("Initial products seeding note:", err);
@@ -87,7 +92,7 @@ export const seedInitialProducts = async () => {
  */
 export const saveProductToFirestore = async (product: Product) => {
   try {
-    await setDoc(doc(db, "products", product.id), product);
+    await setDoc(doc(db, "products", product.id), cleanForFirestore(product));
   } catch (err) {
     console.error("Error saving product to Firestore:", err);
   }
@@ -137,7 +142,7 @@ export const subscribeToOrders = (onOrders: (orders: Order[]) => void) => {
  */
 export const saveOrderToFirestore = async (order: Order) => {
   try {
-    await setDoc(doc(db, "orders", order.id), order);
+    await setDoc(doc(db, "orders", order.id), cleanForFirestore(order));
   } catch (err) {
     console.error("Error saving order to Firestore:", err);
   }
