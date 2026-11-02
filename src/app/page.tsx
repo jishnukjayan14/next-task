@@ -44,13 +44,13 @@ export default function Home() {
   }, [products, filterType, filterCategory, searchQuery]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="w-full max-w-[1850px] mx-auto px-4 sm:px-8 lg:px-12 py-8 space-y-7">
       
       {/* Top Search & Category Filter Header (Clean & Minimalist) */}
       <div className="space-y-4">
         
         {/* Search Bar & Active Status */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           
           {/* Active filter text indicator */}
           <div className="flex items-center gap-2">
@@ -82,19 +82,19 @@ export default function Home() {
           </div>
 
           {/* Search Input Box */}
-          <div className="relative w-full sm:w-72">
+          <div className="relative w-full md:w-80">
             <input
               type="text"
               placeholder="Search diaries, planners, bookmarks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs pl-8 pr-3 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
+              className="w-full text-xs pl-8 pr-3 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
             />
-            <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-2.5" />
+            <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-3" />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-2.5 text-neutral-400 hover:text-black"
+                className="absolute right-2.5 top-3 text-neutral-400 hover:text-black"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -140,7 +140,7 @@ export default function Home() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6 sm:gap-7">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

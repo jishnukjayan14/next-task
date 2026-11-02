@@ -230,7 +230,7 @@ export default function AdminPage() {
     : orders.filter((o) => o.fulfillmentStatus === filterStatus);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="w-full max-w-[1850px] mx-auto px-4 sm:px-8 lg:px-12 py-10 space-y-8">
       
       {/* Top Banner */}
       <div className="bg-black text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">

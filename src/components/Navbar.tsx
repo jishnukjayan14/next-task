@@ -72,7 +72,7 @@ export const Navbar: React.FC = () => {
     <div className="w-full bg-white border-b border-black/10 sticky top-0 z-40">
       
       {/* 1. TOP BRAND BANNER: GRAND BLACK BANNER, LARGE ROUND LOGO (NEARLY FULL HEIGHT), CENTERED WHITE SIGNATURE */}
-      <div className="w-full bg-black text-white py-4 sm:py-6 md:py-7 px-4 sm:px-8 border-b border-neutral-800 relative flex items-center justify-between min-h-[135px] sm:min-h-[175px] md:min-h-[195px] overflow-hidden">
+      <div className="w-full bg-black text-white py-4 sm:py-6 md:py-7 px-4 sm:px-8 lg:px-12 border-b border-neutral-800 relative flex items-center justify-between min-h-[135px] sm:min-h-[175px] md:min-h-[195px] overflow-hidden">
         
         {/* Left: LARGE ROUND LOGO (Nearly filling the banner height for maximum visibility) */}
         <div className="z-10 flex items-center">
@@ -135,7 +135,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* 2. LOWER NAVIGATION BAR */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <div className="w-full max-w-[1850px] mx-auto px-4 sm:px-8 lg:px-12 h-14 flex items-center justify-between">
         
         {/* Navigation Links (Desktop) */}
         <nav className="hidden md:flex items-center gap-8 text-xs font-bold tracking-wider uppercase text-neutral-700">

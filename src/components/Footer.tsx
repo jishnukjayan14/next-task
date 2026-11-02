@@ -7,7 +7,7 @@ import { Shield } from "lucide-react";
 export const Footer: React.FC = () => {
   return (
     <footer className="bg-black text-white pt-14 pb-10 border-t border-neutral-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="w-full max-w-[1850px] mx-auto px-4 sm:px-8 lg:px-12 space-y-10">
         
         {/* Brand & Links */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
