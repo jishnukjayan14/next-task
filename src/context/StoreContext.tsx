@@ -2,6 +2,14 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product, INITIAL_PRODUCTS } from "@/data/products";
+import {
+  subscribeToProducts,
+  saveProductToFirestore,
+  removeProductFromFirestore,
+  subscribeToOrders,
+  saveOrderToFirestore,
+  updateOrderStatusInFirestore
+} from "@/lib/firebase";
 
 export interface CartItem {
   id: string;
@@ -102,6 +110,28 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [customer, setCustomer] = useState<CustomerUser | null>(null);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
+  // Real-time Cloud Sync with Firebase Firestore (All devices stay in sync)
+  useEffect(() => {
+    // 1. Subscribe to real-time products across all phones/computers
+    const unsubscribeProducts = subscribeToProducts((cloudProducts) => {
+      if (cloudProducts && cloudProducts.length > 0) {
+        setProducts(cloudProducts);
+      }
+    });
+
+    // 2. Subscribe to real-time customer orders
+    const unsubscribeOrders = subscribeToOrders((cloudOrders) => {
+      if (cloudOrders && cloudOrders.length > 0) {
+        setOrders(cloudOrders);
+      }
+    });
+
+    return () => {
+      if (typeof unsubscribeProducts === "function") unsubscribeProducts();
+      if (typeof unsubscribeOrders === "function") unsubscribeOrders();
+    };
+  }, []);
 
   // Load from localStorage on client
   useEffect(() => {
@@ -291,6 +321,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     setOrders((prev) => [newOrder, ...prev]);
+    saveOrderToFirestore(newOrder);
     clearCart();
     return newOrder;
   };
@@ -299,21 +330,25 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setOrders((prev) =>
       prev.map((ord) => (ord.id === orderId ? { ...ord, fulfillmentStatus: status } : ord))
     );
+    updateOrderStatusInFirestore(orderId, status);
   };
 
   // Products
   const addProduct = (newProduct: Product) => {
-    setProducts((prev) => [newProduct, ...prev]);
+    setProducts((prev) => [newProduct, ...prev.filter((p) => p.id !== newProduct.id)]);
+    saveProductToFirestore(newProduct);
   };
 
   const updateProduct = (updatedProduct: Product) => {
     setProducts((prev) =>
       prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
     );
+    saveProductToFirestore(updatedProduct);
   };
 
   const deleteProduct = (productId: string) => {
     setProducts((prev) => prev.filter((p) => p.id !== productId));
+    removeProductFromFirestore(productId);
   };
 
   return (
