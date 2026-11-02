@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useStore } from "@/context/StoreContext";
-import { ShoppingBag, User as UserIcon, LogIn, LogOut, X, Menu, Shield, Lock, Eye, EyeOff } from "lucide-react";
+import { ShoppingBag, User as UserIcon, LogIn, LogOut, X, Menu } from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const router = useRouter();
@@ -19,25 +19,15 @@ export const Navbar: React.FC = () => {
     setSearchQuery,
     customer,
     loginCustomer,
-    logoutCustomer,
-    isAdminLoggedIn,
-    loginAdmin,
-    logoutAdmin,
-    orders
+    logoutCustomer
   } = useStore();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authTab, setAuthTab] = useState<"customer" | "admin">("customer");
 
   // Customer form state
   const [custEmail, setCustEmail] = useState("");
   const [custName, setCustName] = useState("");
-
-  // Admin form state
-  const [adminPassword, setAdminPassword] = useState("");
-  const [adminError, setAdminError] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleNavClick = (type: string, category: string = "ALL") => {
     setFilterType(type);
@@ -54,18 +44,6 @@ export const Navbar: React.FC = () => {
     if (!custEmail.trim()) return;
     loginCustomer(custEmail, custName);
     setShowAuthModal(false);
-  };
-
-  const handleAdminSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = loginAdmin(adminPassword);
-    if (success) {
-      setAdminError(false);
-      setShowAuthModal(false);
-      router.push("/admin");
-    } else {
-      setAdminError(true);
-    }
   };
 
   return (
@@ -104,33 +82,8 @@ export const Navbar: React.FC = () => {
           </button>
         </div>
 
-        {/* Right: Quick Admin Access pill */}
-        <div className="z-10 flex items-center">
-          {isAdminLoggedIn ? (
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white text-[11px] font-mono border border-neutral-700 transition-all shadow-xs"
-            >
-              <Shield className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="hidden md:inline">Admin Active</span>
-              <span className="bg-white text-black font-bold px-1.5 py-0.2 rounded-full text-[10px]">
-                {orders.length}
-              </span>
-            </Link>
-          ) : (
-            <button
-              onClick={() => {
-                setAuthTab("admin");
-                setShowAuthModal(true);
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-neutral-900/90 hover:bg-neutral-800 text-neutral-300 hover:text-white text-[11px] font-mono border border-neutral-700 transition-all cursor-pointer"
-              title="Store Owner Portal"
-            >
-              <Lock className="w-3 h-3" />
-              <span className="hidden sm:inline">Admin Access</span>
-            </button>
-          )}
-        </div>
+        {/* Right: Optical balance space for perfectly centered logo & signature */}
+        <div className="z-10 w-24 sm:w-32 md:w-38 shrink-0 hidden sm:block pointer-events-none" />
 
       </div>
 
@@ -194,17 +147,6 @@ export const Navbar: React.FC = () => {
           >
             My Orders
           </Link>
-
-          {/* If Admin is logged in, show dedicated Admin Dashboard link */}
-          {isAdminLoggedIn && (
-            <Link
-              href="/admin"
-              className="bg-black text-white px-3 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-neutral-800 transition-colors"
-            >
-              <Shield className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Admin Panel ({orders.length} Orders)</span>
-            </Link>
-          )}
         </nav>
 
         {/* Mobile Hamburger Button */}
@@ -219,7 +161,7 @@ export const Navbar: React.FC = () => {
         {/* Right Actions: Login & Cart */}
         <div className="flex items-center gap-3">
           
-          {/* Customer / Admin Status or Sign In Button */}
+          {/* Customer Status or Sign In Button */}
           {customer ? (
             <div className="flex items-center gap-2">
               <Link
@@ -239,10 +181,7 @@ export const Navbar: React.FC = () => {
             </div>
           ) : (
             <button
-              onClick={() => {
-                setAuthTab("customer");
-                setShowAuthModal(true);
-              }}
+              onClick={() => setShowAuthModal(true)}
               className="flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-black border border-black px-3.5 py-1.5 rounded-full hover:bg-black hover:text-white transition-all cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
@@ -300,36 +239,10 @@ export const Navbar: React.FC = () => {
           >
             My Orders
           </Link>
-
-          {/* Admin link on mobile */}
-          <div className="pt-2">
-            {isAdminLoggedIn ? (
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 py-2 px-3 bg-black text-white rounded-lg font-bold"
-              >
-                <Shield className="w-4 h-4 text-emerald-400" />
-                <span>Admin Dashboard ({orders.length} Orders)</span>
-              </Link>
-            ) : (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setAuthTab("admin");
-                  setShowAuthModal(true);
-                }}
-                className="w-full flex items-center justify-center gap-2 py-2 px-3 border border-black rounded-lg text-black font-bold cursor-pointer"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>Admin Login (Store Management)</span>
-              </button>
-            )}
-          </div>
         </div>
       )}
 
-      {/* COMBINED AUTH MODAL */}
+      {/* CUSTOMER AUTH MODAL */}
       {showAuthModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-black/10 relative">
@@ -340,163 +253,55 @@ export const Navbar: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
             
-            {/* TAB SELECTOR */}
-            <div className="flex border-b border-neutral-200 mb-5">
-              <button
-                type="button"
-                onClick={() => setAuthTab("customer")}
-                className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider text-center border-b-2 transition-all cursor-pointer ${
-                  authTab === "customer"
-                    ? "border-black text-black font-black"
-                    : "border-transparent text-neutral-400 hover:text-neutral-700"
-                }`}
-              >
-                Customer Login
-              </button>
+            <div className="space-y-5 pt-2">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-md">
+                  <UserIcon className="w-6 h-6" />
+                </div>
+                <h3 className="font-sans font-bold text-lg text-black">
+                  Customer Sign In
+                </h3>
+                <p className="text-xs text-neutral-500 mt-1">
+                  Enter your email to track your orders and digital downloads
+                </p>
+              </div>
 
-              <button
-                type="button"
-                onClick={() => setAuthTab("admin")}
-                className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider text-center border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                  authTab === "admin"
-                    ? "border-black text-black font-black"
-                    : "border-transparent text-neutral-400 hover:text-neutral-700"
-                }`}
-              >
-                <Lock className="w-3 h-3" />
-                <span>Admin Login 🔒</span>
-              </button>
+              <form onSubmit={handleCustomerSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="yourname@gmail.com"
+                    value={custEmail}
+                    onChange={(e) => setCustEmail(e.target.value)}
+                    className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg focus:outline-none focus:border-black text-black"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                    Your Name (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Rahul"
+                    value={custName}
+                    onChange={(e) => setCustName(e.target.value)}
+                    className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg focus:outline-none focus:border-black text-black"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
+                >
+                  Continue
+                </button>
+              </form>
             </div>
-
-            {/* TAB 1: CUSTOMER SIGN IN */}
-            {authTab === "customer" && (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <h3 className="font-sans font-bold text-base text-black">
-                    Customer Sign In
-                  </h3>
-                  <p className="text-xs text-neutral-500 mt-0.5">
-                    Enter your email to track orders and access digital downloads
-                  </p>
-                </div>
-
-                <form onSubmit={handleCustomerSubmit} className="space-y-3.5">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="yourname@gmail.com"
-                      value={custEmail}
-                      onChange={(e) => setCustEmail(e.target.value)}
-                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg focus:outline-none focus:border-black text-black"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                      Your Name (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g., Rahul"
-                      value={custName}
-                      onChange={(e) => setCustName(e.target.value)}
-                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg focus:outline-none focus:border-black text-black"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
-                  >
-                    Continue as Customer
-                  </button>
-                </form>
-
-                <div className="pt-2 text-center border-t border-neutral-100">
-                  <button
-                    type="button"
-                    onClick={() => setAuthTab("admin")}
-                    className="text-[11px] text-neutral-500 hover:text-black flex items-center justify-center gap-1 mx-auto cursor-pointer"
-                  >
-                    <Lock className="w-3 h-3" />
-                    <span>Store Owner? <strong>Admin Login Here</strong></span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 2: SECURE STORE ADMIN LOGIN */}
-            {authTab === "admin" && (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <div className="w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center mx-auto mb-2">
-                    <Shield className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-sans font-bold text-base text-black">
-                    Store Admin Portal
-                  </h3>
-                  <p className="text-xs text-neutral-500 mt-0.5">
-                    Enter administrative passcode to manage orders and catalog
-                  </p>
-                </div>
-
-                {adminError && (
-                  <div className="p-2.5 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-semibold text-center">
-                    Incorrect password! (Password: admin123)
-                  </div>
-                )}
-
-                <form onSubmit={handleAdminSubmit} className="space-y-3.5">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                      Admin Passcode *
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        required
-                        value={adminPassword}
-                        onChange={(e) => setAdminPassword(e.target.value)}
-                        placeholder="Enter admin password"
-                        className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg focus:outline-none focus:border-black text-black"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-2.5 text-neutral-400 hover:text-black cursor-pointer"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    <span className="text-[10px] text-neutral-400 mt-1 block">
-                      Default password: <code className="bg-neutral-100 px-1 py-0.5 rounded font-mono">admin123</code>
-                    </span>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Shield className="w-3.5 h-3.5" />
-                    <span>Login to Admin Dashboard</span>
-                  </button>
-                </form>
-
-                <div className="pt-2 text-center border-t border-neutral-100">
-                  <button
-                    type="button"
-                    onClick={() => setAuthTab("customer")}
-                    className="text-[11px] text-neutral-500 hover:text-black cursor-pointer"
-                  >
-                    ← Back to Customer Login
-                  </button>
-                </div>
-              </div>
-            )}
 
           </div>
         </div>

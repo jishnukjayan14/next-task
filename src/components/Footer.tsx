@@ -66,20 +66,13 @@ export const Footer: React.FC = () => {
 
         </div>
 
-        {/* Bottom Bar with Admin Portal Access */}
+        {/* Bottom Bar */}
         <div className="pt-8 border-t border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-neutral-500 font-mono">
           <div>
             © {new Date().getFullYear()} NEXT TASK. All rights reserved.
           </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/admin/login"
-              className="hover:text-neutral-300 flex items-center gap-1 transition-colors"
-            >
-              <Shield className="w-3 h-3" />
-              <span>Admin Portal Login</span>
-            </Link>
+          <div>
+            Handcrafted with care in India
           </div>
         </div>
 
