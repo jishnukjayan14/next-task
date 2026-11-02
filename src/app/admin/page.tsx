@@ -21,11 +21,15 @@ import {
   Eye,
   EyeOff,
   Printer,
-  QrCode as QrIcon
+  QrCode as QrIcon,
+  Upload,
+  Loader2,
+  Sparkles as SparklesIcon
 } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/data/products";
 import { ShippingLabelModal } from "@/components/ShippingLabelModal";
+import { processImageFiles } from "@/utils/imageUpload";
 
 export default function AdminPage() {
   const {
@@ -65,10 +69,10 @@ export default function AdminPage() {
   const [newType, setNewType] = useState<Product["type"]>("CUSTOM_PHYSICAL");
   const [newStock, setNewStock] = useState("20");
   const [newDescription, setNewDescription] = useState("");
-  const [newImages, setNewImages] = useState<string[]>([
-    "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80"
-  ]);
+  const [newImages, setNewImages] = useState<string[]>([]);
   const [tempImageUrl, setTempImageUrl] = useState("");
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [isUploadingEditImages, setIsUploadingEditImages] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
 
   // If not logged in, show inline secure login card right here
@@ -153,7 +157,7 @@ export default function AdminPage() {
     );
   }
 
-  // Handle Add Image in Create Form
+  // Handle Add Image via URL in Create Form
   const handleAddImage = () => {
     if (tempImageUrl.trim()) {
       setNewImages([...newImages, tempImageUrl.trim()]);
@@ -165,10 +169,86 @@ export default function AdminPage() {
     setNewImages(newImages.filter((_, i) => i !== index));
   };
 
+  const handleSetMainImage = (index: number) => {
+    if (index === 0) return;
+    setNewImages((prev) => {
+      const selected = prev[index];
+      const rest = prev.filter((_, i) => i !== index);
+      return [selected, ...rest];
+    });
+  };
+
+  // Device upload for new product
+  const handleDeviceUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      setIsUploadingImages(true);
+      const optimizedUrls = await processImageFiles(files);
+      if (optimizedUrls.length > 0) {
+        setNewImages((prev) => [...prev, ...optimizedUrls]);
+      }
+    } catch (err) {
+      console.error("Error processing images:", err);
+      alert("Failed to process one or more images from device. Please try again.");
+    } finally {
+      setIsUploadingImages(false);
+      e.target.value = "";
+    }
+  };
+
+  // Device upload for edit product modal
+  const handleEditDeviceUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !editingProduct) return;
+
+    try {
+      setIsUploadingEditImages(true);
+      const optimizedUrls = await processImageFiles(files);
+      if (optimizedUrls.length > 0) {
+        const existing = editingProduct.images && editingProduct.images.length > 0
+          ? editingProduct.images
+          : [editingProduct.imageUrl];
+        const updated = [...existing, ...optimizedUrls];
+        setEditingProduct({
+          ...editingProduct,
+          images: updated,
+          imageUrl: updated[0] || editingProduct.imageUrl
+        });
+      }
+    } catch (err) {
+      console.error("Error processing edit images:", err);
+      alert("Failed to process one or more images from device. Please try again.");
+    } finally {
+      setIsUploadingEditImages(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleSetEditMainImage = (index: number) => {
+    if (!editingProduct || index === 0) return;
+    const currentImgs = editingProduct.images && editingProduct.images.length > 0
+      ? editingProduct.images
+      : [editingProduct.imageUrl];
+    const selected = currentImgs[index];
+    const rest = currentImgs.filter((_, i) => i !== index);
+    const updated = [selected, ...rest];
+    setEditingProduct({
+      ...editingProduct,
+      images: updated,
+      imageUrl: updated[0]
+    });
+  };
+
   // Handle Create Product
   const handleCreateProduct = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newPrice) return;
+    if (newImages.length === 0) {
+      alert("Please add at least 1 image for the product using 'Choose Photos from Device' or by URL.");
+      return;
+    }
 
     addProduct({
       id: "prod-" + Date.now(),
@@ -187,7 +267,7 @@ export default function AdminPage() {
       ],
       rating: 5.0,
       reviewsCount: 1,
-      imageUrl: newImages[0] || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80",
+      imageUrl: newImages[0],
       images: newImages,
       allowsPersonalization: newType === "CUSTOM_PHYSICAL",
       personalizationPlaceholder: newType === "CUSTOM_PHYSICAL" ? "Custom name to emboss on cover" : undefined,
@@ -206,7 +286,7 @@ export default function AdminPage() {
     setNewPrice("");
     setNewOriginalPrice("");
     setNewDescription("");
-    setNewImages(["https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80"]);
+    setNewImages([]);
   };
 
   // Handle Save Edit
@@ -669,47 +749,120 @@ export default function AdminPage() {
             )}
 
             {/* MULTIPLE IMAGES SECTION */}
-            <div className="space-y-2 pt-2 border-t border-neutral-200">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-                Product Images
-              </label>
+            <div className="space-y-3 pt-3 border-t border-neutral-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-800">
+                    Product Images ({newImages.length})
+                  </label>
+                  <p className="text-[11px] text-neutral-500">
+                    Upload photos directly from your phone or computer. The first image will be the main display cover.
+                  </p>
+                </div>
+                {newImages.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setNewImages([])}
+                    className="text-[11px] text-red-600 hover:underline font-semibold cursor-pointer"
+                  >
+                    Clear All Photos
+                  </button>
+                )}
+              </div>
 
-              <div className="flex gap-2">
+              {/* DEVICE UPLOAD BUTTON / DROPZONE */}
+              <div className="border-2 border-dashed border-neutral-300 hover:border-black rounded-xl p-4 text-center transition-colors bg-neutral-50/60">
+                <input
+                  type="file"
+                  id="new-product-file-upload"
+                  accept="image/*"
+                  multiple
+                  onChange={handleDeviceUpload}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="new-product-file-upload"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-black hover:bg-neutral-800 text-white rounded-lg text-xs font-bold cursor-pointer transition-all shadow-xs"
+                >
+                  {isUploadingImages ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <span>Processing Photos...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 text-white" />
+                      <span>Choose Photos from Device</span>
+                    </>
+                  )}
+                </label>
+                <p className="text-[10px] text-neutral-500 mt-2">
+                  Select 1 or multiple images from your device (JPG, PNG, WEBP). Photos are automatically optimized.
+                </p>
+              </div>
+
+              {/* OR PASTE URL COLLAPSIBLE / SECONDARY */}
+              <div className="flex items-center gap-2 pt-1">
                 <input
                   type="url"
-                  placeholder="Paste Image URL..."
+                  placeholder="Or paste an image web URL..."
                   value={tempImageUrl}
                   onChange={(e) => setTempImageUrl(e.target.value)}
-                  className="flex-1 text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
+                  className="flex-1 text-xs px-3 py-2 bg-white border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
                 />
                 <button
                   type="button"
                   onClick={handleAddImage}
-                  className="px-4 py-2 bg-black text-white rounded-lg text-xs font-bold cursor-pointer"
+                  className="px-3.5 py-2 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 rounded-lg text-xs font-bold cursor-pointer transition-colors"
                 >
-                  + Add Image
+                  + Add URL
                 </button>
               </div>
 
-              <div className="flex flex-wrap gap-2 pt-2">
-                {newImages.map((img, idx) => (
-                  <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden border border-neutral-300 group">
-                    <img src={img} alt="preview" className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(idx)}
-                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-80 hover:opacity-100 cursor-pointer"
+              {/* PREVIEW GALLERY */}
+              {newImages.length > 0 ? (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2">
+                  {newImages.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className={`relative aspect-square rounded-xl overflow-hidden border-2 bg-neutral-100 group shadow-xs ${
+                        idx === 0 ? "border-black ring-2 ring-black/20" : "border-neutral-200"
+                      }`}
                     >
-                      <X className="w-3 h-3" />
-                    </button>
-                    {idx === 0 && (
-                      <span className="absolute bottom-0 inset-x-0 bg-black/75 text-white text-[8px] text-center font-bold">
-                        Main
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
+                      <img src={img} alt={`preview-${idx}`} className="w-full h-full object-cover" />
+                      
+                      {/* Top Delete Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(idx)}
+                        className="absolute top-1 right-1 bg-black/70 hover:bg-red-600 text-white rounded-full p-1 transition-colors cursor-pointer"
+                        title="Delete photo"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Main Cover Badge or Set As Main Button */}
+                      {idx === 0 ? (
+                        <span className="absolute bottom-1 inset-x-1 bg-black text-white text-[9px] font-bold text-center py-0.5 rounded shadow-xs uppercase tracking-wider">
+                          Main Cover
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetMainImage(idx)}
+                          className="absolute bottom-1 inset-x-1 bg-white/95 hover:bg-white text-black text-[9px] font-bold text-center py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity shadow-xs cursor-pointer"
+                        >
+                          Set as Main
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-3 bg-neutral-100 border border-neutral-200 rounded-lg text-xs text-neutral-600 text-center">
+                  📸 No photos added yet. Click <strong>&quot;Choose Photos from Device&quot;</strong> above to upload images for this product.
+                </div>
+              )}
             </div>
 
             <div>
@@ -853,17 +1006,57 @@ export default function AdminPage() {
               )}
 
               {/* Edit Images List */}
-              <div className="space-y-2 pt-2 border-t border-neutral-200">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-                  Product Images:
-                </label>
+              <div className="space-y-3 pt-3 border-t border-neutral-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-800">
+                      Product Images ({(editingProduct.images || [editingProduct.imageUrl]).length})
+                    </label>
+                    <p className="text-[10px] text-neutral-500">
+                      First image is the main store cover photo
+                    </p>
+                  </div>
+                </div>
+
+                {/* Device Upload for Edit */}
+                <div className="border border-dashed border-neutral-300 hover:border-black rounded-xl p-3 text-center bg-neutral-50/60">
+                  <input
+                    type="file"
+                    id="edit-product-file-upload"
+                    accept="image/*"
+                    multiple
+                    onChange={handleEditDeviceUpload}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="edit-product-file-upload"
+                    className="inline-flex items-center gap-2 px-3.5 py-2 bg-black hover:bg-neutral-800 text-white rounded-lg text-xs font-bold cursor-pointer transition-all shadow-xs"
+                  >
+                    {isUploadingEditImages ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                        <span>Processing Photos...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5 text-white" />
+                        <span>Upload Photos from Device</span>
+                      </>
+                    )}
+                  </label>
+                  <p className="text-[10px] text-neutral-500 mt-1.5">
+                    Select new photos from your phone/computer to add to this product.
+                  </p>
+                </div>
+
+                {/* Optional URL input */}
                 <div className="flex gap-2">
                   <input
                     type="url"
-                    placeholder="Add image URL..."
+                    placeholder="Or add image URL..."
                     value={tempImageUrl}
                     onChange={(e) => setTempImageUrl(e.target.value)}
-                    className="flex-1 text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
+                    className="flex-1 text-xs px-3 py-1.5 bg-white border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
                   />
                   <button
                     type="button"
@@ -874,16 +1067,23 @@ export default function AdminPage() {
                         setTempImageUrl("");
                       }
                     }}
-                    className="px-3 py-1.5 bg-black text-white text-xs font-bold rounded-lg cursor-pointer"
+                    className="px-3 py-1.5 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 text-xs font-bold rounded-lg cursor-pointer transition-colors"
                   >
-                    + Add
+                    + Add URL
                   </button>
                 </div>
 
-                <div className="flex flex-wrap gap-2 pt-1">
+                {/* Preview Cards with Make Main and Delete */}
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 pt-1">
                   {(editingProduct.images || [editingProduct.imageUrl]).map((img, idx) => (
-                    <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-neutral-300">
+                    <div
+                      key={idx}
+                      className={`relative aspect-square rounded-lg overflow-hidden border-2 bg-neutral-100 group shadow-xs ${
+                        idx === 0 ? "border-black ring-1 ring-black/20" : "border-neutral-200"
+                      }`}
+                    >
                       <img src={img} alt="edit-preview" className="w-full h-full object-cover" />
+                      
                       <button
                         type="button"
                         onClick={() => {
@@ -891,13 +1091,28 @@ export default function AdminPage() {
                           setEditingProduct({
                             ...editingProduct,
                             images: updated,
-                            imageUrl: updated[0] || editingProduct.imageUrl
+                            imageUrl: updated[0] || ""
                           });
                         }}
-                        className="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full p-0.5 cursor-pointer"
+                        className="absolute top-1 right-1 bg-black/70 hover:bg-red-600 text-white rounded-full p-1 transition-colors cursor-pointer"
+                        title="Delete photo"
                       >
                         <X className="w-3 h-3" />
                       </button>
+
+                      {idx === 0 ? (
+                        <span className="absolute bottom-0.5 inset-x-0.5 bg-black text-white text-[8px] font-bold text-center py-0.5 rounded uppercase">
+                          Main
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetEditMainImage(idx)}
+                          className="absolute bottom-0.5 inset-x-0.5 bg-white/95 hover:bg-white text-black text-[8px] font-bold text-center py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-xs"
+                        >
+                          Make Main
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
