@@ -138,17 +138,29 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Price Bar */}
-          <div className="p-4 bg-neutral-50 rounded-xl border border-neutral-200 flex items-center justify-between">
-            <div className="flex items-baseline gap-2">
-              <span className="font-mono font-bold text-2xl text-black">₹{product.price}</span>
-              {product.originalPrice && (
-                <span className="text-xs text-neutral-400 line-through font-mono">
-                  ₹{product.originalPrice}
-                </span>
+          <div className="p-4 sm:p-5 bg-neutral-50 rounded-xl border border-neutral-200 flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-baseline gap-2.5">
+                <span className="font-mono font-bold text-2xl sm:text-3xl text-black">₹{product.price}</span>
+                {product.originalPrice && product.originalPrice > product.price && (
+                  <span className="text-sm sm:text-base text-neutral-400 line-through font-mono">
+                    MRP ₹{product.originalPrice}
+                  </span>
+                )}
+                {product.originalPrice && product.originalPrice > product.price && (
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded font-mono">
+                    {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                  </span>
+                )}
+              </div>
+              {product.originalPrice && product.originalPrice > product.price && (
+                <p className="text-[11px] font-semibold text-emerald-700">
+                  Special Offer Price • You save ₹{product.originalPrice - product.price} ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% discount)
+                </p>
               )}
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-black text-white px-2 py-0.5 rounded">
-              {product.type}
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-black text-white px-2.5 py-1 rounded shadow-xs">
+              {product.type === "CUSTOM_PHYSICAL" ? "Custom Made" : product.type === "DIGITAL" ? "Instant Download" : "Ready Stock"}
             </span>
           </div>
 

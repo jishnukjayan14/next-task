@@ -22,6 +22,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     addToCart(product, 1);
   };
 
+  const hasDiscount = Boolean(product.originalPrice && product.originalPrice > product.price);
+  const discountPercent = hasDiscount
+    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
+    : 0;
+
   return (
     <div className="group bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-xs hover:border-black transition-all duration-300 flex flex-col justify-between">
       <div>
@@ -33,8 +38,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
 
-          {/* Type Badge */}
-          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
+          {/* Type Badge & Offer Discount Badge */}
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 items-start">
+            {hasDiscount && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded shadow-xs">
+                {discountPercent}% OFF
+              </span>
+            )}
             {product.type === "CUSTOM_PHYSICAL" && (
               <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-black text-white px-2 py-0.5 rounded shadow-xs">
                 <Sparkles className="w-2.5 h-2.5" />
@@ -90,10 +100,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="p-4 pt-0">
         <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
           <div>
-            <span className="text-base font-bold text-black font-mono">₹{product.price}</span>
-            {product.originalPrice && (
-              <span className="text-xs text-neutral-400 line-through ml-1.5 font-mono">
-                ₹{product.originalPrice}
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-base font-bold text-black font-mono">₹{product.price}</span>
+              {hasDiscount && (
+                <span className="text-xs text-neutral-400 line-through font-mono">
+                  ₹{product.originalPrice}
+                </span>
+              )}
+            </div>
+            {hasDiscount && (
+              <span className="text-[10px] font-bold text-emerald-700 font-mono block">
+                Save {discountPercent}% (₹{product.originalPrice! - product.price})
               </span>
             )}
           </div>

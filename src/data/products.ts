@@ -5,7 +5,7 @@ export interface Product {
   price: number;
   originalPrice?: number;
   type: 'DIGITAL' | 'READY_STOCK' | 'CUSTOM_PHYSICAL';
-  category: 'Planners' | 'Diaries' | 'Trackers' | 'Bookmarks' | 'To-Do Lists';
+  category: string;
   description: string;
   features: string[];
   rating: number;
@@ -19,6 +19,14 @@ export interface Product {
   downloadFileName?: string;
   badge?: string;
 }
+
+export const DEFAULT_CATEGORIES: string[] = [
+  "Diaries",
+  "Planners",
+  "Trackers",
+  "Bookmarks",
+  "To-Do Lists"
+];
 
 export const INITIAL_PRODUCTS: Product[] = [
   {

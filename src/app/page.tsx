@@ -8,6 +8,7 @@ import { Search, X } from "lucide-react";
 export default function Home() {
   const {
     products,
+    categories,
     filterType,
     setFilterType,
     filterCategory,
@@ -16,7 +17,7 @@ export default function Home() {
     setSearchQuery
   } = useStore();
 
-  const categories = ["ALL", "Diaries", "Planners", "Trackers", "Bookmarks", "To-Do Lists"];
+  const allDisplayCategories = useMemo(() => ["ALL", ...categories], [categories]);
 
   // Filter products based on global navbar filter + search + sub-category
   const filteredProducts = useMemo(() => {
@@ -105,7 +106,7 @@ export default function Home() {
         {/* Secondary Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs border-b border-neutral-100 pb-3">
           <span className="text-neutral-400 font-mono text-[10px] uppercase mr-1">Categories:</span>
-          {categories.map((cat) => (
+          {allDisplayCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}

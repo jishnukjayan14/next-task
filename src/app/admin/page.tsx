@@ -41,7 +41,9 @@ export default function AdminPage() {
     products,
     addProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    categories,
+    addCategory
   } = useStore();
 
   // Inline Admin Login State if not logged in
@@ -55,6 +57,11 @@ export default function AdminPage() {
 
   // Editing modal state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  // Category Modal state
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [categoryFeedback, setCategoryFeedback] = useState<string | null>(null);
 
   // Shipping Label modal state
   const [selectedLabelOrder, setSelectedLabelOrder] = useState<Order | null>(null);
@@ -156,6 +163,31 @@ export default function AdminPage() {
       </div>
     );
   }
+
+  // Handle adding new custom category
+  const handleAddNewCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newCategoryName.trim();
+    if (!trimmed) return;
+    addCategory(trimmed);
+    setNewCategory(trimmed);
+    if (editingProduct) {
+      setEditingProduct({ ...editingProduct, category: trimmed });
+    }
+    setCategoryFeedback(`Category "${trimmed}" successfully added!`);
+    setTimeout(() => {
+      setCategoryFeedback(null);
+      setShowAddCategoryModal(false);
+      setNewCategoryName("");
+    }, 1000);
+  };
+
+  // Live offer discount calculation for create form
+  const numNewPrice = parseFloat(newPrice) || 0;
+  const numNewOriginalPrice = parseFloat(newOriginalPrice) || 0;
+  const hasNewDiscount = numNewOriginalPrice > numNewPrice && numNewPrice > 0;
+  const newDiscountPercent = hasNewDiscount ? Math.round(((numNewOriginalPrice - numNewPrice) / numNewOriginalPrice) * 100) : 0;
+  const newSavingsAmount = hasNewDiscount ? (numNewOriginalPrice - numNewPrice) : 0;
 
   // Handle Add Image via URL in Create Form
   const handleAddImage = () => {
@@ -559,68 +591,132 @@ export default function AdminPage() {
       {/* TAB 2: PRODUCTS CATALOG (WITH EDIT & DELETE) */}
       {activeTab === "products" && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500">
-              Active Store Products ({products.length})
-            </h3>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                Active Store Products ({products.length})
+              </h3>
+              <p className="text-xs text-neutral-400">
+                Manage stock, prices, categories and offers across your catalog
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowAddCategoryModal(true)}
+                className="px-3 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer border border-neutral-300"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Add Category</span>
+              </button>
+              <button
+                onClick={() => setActiveTab("add_product")}
+                className="px-3.5 py-2 bg-black hover:bg-neutral-800 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add New Product</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Categories Pill Bar */}
+          <div className="bg-white p-3.5 rounded-xl border border-neutral-200 flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 mr-1">
+              Store Categories ({categories.length}):
+            </span>
+            {categories.map((cat) => (
+              <span
+                key={cat}
+                className="px-2.5 py-1 bg-neutral-100 text-black text-xs font-semibold rounded-full border border-neutral-200"
+              >
+                {cat}
+              </span>
+            ))}
             <button
-              onClick={() => setActiveTab("add_product")}
-              className="px-3.5 py-2 bg-black text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+              onClick={() => setShowAddCategoryModal(true)}
+              className="text-[11px] font-bold text-black hover:underline flex items-center gap-1 px-2 py-0.5 ml-1 cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add New Product</span>
+              <Plus className="w-3 h-3" />
+              <span>New</span>
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {products.map((p) => (
-              <div
-                key={p.id}
-                className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-xs p-4 flex flex-col justify-between space-y-4"
-              >
-                <div>
-                  <div className="aspect-[4/5] rounded-xl overflow-hidden bg-neutral-100 relative mb-3">
-                    <img src={p.imageUrl} alt={p.title} className="w-full h-full object-cover" />
-                    <span className="absolute top-2 left-2 bg-black text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                      {p.type}
-                    </span>
-                    {p.images && p.images.length > 1 && (
-                      <span className="absolute bottom-2 right-2 bg-white/90 text-black text-[10px] font-bold px-1.5 py-0.5 rounded shadow-xs flex items-center gap-1">
-                        <ImageIcon className="w-3 h-3" />
-                        {p.images.length} images
+            {products.map((p) => {
+              const pHasDiscount = Boolean(p.originalPrice && p.originalPrice > p.price);
+              const pDiscountPercent = pHasDiscount
+                ? Math.round((((p.originalPrice || 0) - p.price) / (p.originalPrice || 1)) * 100)
+                : 0;
+
+              return (
+                <div
+                  key={p.id}
+                  className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-xs p-4 flex flex-col justify-between space-y-4"
+                >
+                  <div>
+                    <div className="aspect-[4/5] rounded-xl overflow-hidden bg-neutral-100 relative mb-3">
+                      <img src={p.imageUrl} alt={p.title} className="w-full h-full object-cover" />
+                      <span className="absolute top-2 left-2 bg-black text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">
+                        {p.type}
                       </span>
-                    )}
+                      {pHasDiscount && (
+                        <span className="absolute top-2 right-2 bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-xs tracking-wider">
+                          {pDiscountPercent}% OFF
+                        </span>
+                      )}
+                      {p.images && p.images.length > 1 && (
+                        <span className="absolute bottom-2 right-2 bg-white/90 text-black text-[10px] font-bold px-1.5 py-0.5 rounded shadow-xs flex items-center gap-1">
+                          <ImageIcon className="w-3 h-3" />
+                          {p.images.length} images
+                        </span>
+                      )}
+                    </div>
+
+                    <h4 className="font-bold text-sm text-black line-clamp-1">{p.title}</h4>
+                    <p className="text-xs text-neutral-500 line-clamp-2 mt-1">{p.subtitle}</p>
+
+                    <div className="flex items-center justify-between text-xs mt-3 pt-2 border-t border-neutral-100">
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-bold text-base text-black font-mono">₹{p.price}</span>
+                          {pHasDiscount && (
+                            <span className="text-xs text-neutral-400 line-through font-mono">
+                              ₹{p.originalPrice}
+                            </span>
+                          )}
+                        </div>
+                        {pHasDiscount && (
+                          <span className="inline-block bg-emerald-50 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded mt-0.5 border border-emerald-200">
+                            Offer: Save {pDiscountPercent}% (₹{(p.originalPrice || 0) - p.price})
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-neutral-600 font-mono text-[11px] bg-neutral-100 px-2 py-1 rounded">
+                        {p.category}
+                      </span>
+                    </div>
                   </div>
 
-                  <h4 className="font-bold text-sm text-black line-clamp-1">{p.title}</h4>
-                  <p className="text-xs text-neutral-500 line-clamp-2 mt-1">{p.subtitle}</p>
+                  {/* Edit & Delete Action Buttons */}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-100">
+                    <button
+                      onClick={() => setEditingProduct({ ...p, images: p.images || [p.imageUrl] })}
+                      className="py-2 px-3 bg-neutral-100 hover:bg-neutral-200 text-black rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Edit</span>
+                    </button>
 
-                  <div className="flex items-center justify-between text-xs mt-3 pt-2 border-t border-neutral-100">
-                    <span className="font-bold text-base text-black font-mono">₹{p.price}</span>
-                    <span className="text-neutral-500 font-mono text-[11px]">{p.category}</span>
+                    <button
+                      onClick={() => handleDelete(p.id, p.title)}
+                      className="py-2 px-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-red-200 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
                   </div>
                 </div>
-
-                {/* Edit & Delete Action Buttons */}
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-100">
-                  <button
-                    onClick={() => setEditingProduct({ ...p, images: p.images || [p.imageUrl] })}
-                    className="py-2 px-3 bg-neutral-100 hover:bg-neutral-200 text-black rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>Edit</span>
-                  </button>
-
-                  <button
-                    onClick={() => handleDelete(p.id, p.title)}
-                    className="py-2 px-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-red-200 cursor-pointer"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Delete</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -678,7 +774,7 @@ export default function AdminPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                      Price (₹) *
+                      Offer / Selling Price (₹) *
                     </label>
                     <input
                       type="number"
@@ -686,8 +782,9 @@ export default function AdminPage() {
                       value={newPrice}
                       onChange={(e) => setNewPrice(e.target.value)}
                       placeholder="399"
-                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
+                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black font-mono font-bold"
                     />
+                    <span className="text-[10px] text-neutral-400 mt-0.5 block">Price customer pays</span>
                   </div>
 
                   <div>
@@ -699,26 +796,54 @@ export default function AdminPage() {
                       value={newOriginalPrice}
                       onChange={(e) => setNewOriginalPrice(e.target.value)}
                       placeholder="599"
-                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black"
+                      className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black font-mono"
                     />
+                    <span className="text-[10px] text-neutral-400 mt-0.5 block">Strikethrough MRP rate</span>
                   </div>
                 </div>
 
+                {/* Real-time Discount Feedback */}
+                {hasNewDiscount && (
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-emerald-600 text-white font-black text-[11px] px-2 py-0.5 rounded shadow-xs tracking-wider">
+                        {newDiscountPercent}% OFF
+                      </span>
+                      <span className="text-emerald-800 font-bold">
+                        Special Offer Active: Customer saves ₹{newSavingsAmount}!
+                      </span>
+                    </div>
+                    <span className="text-emerald-700 font-mono text-[11px] hidden sm:inline">
+                      ₹{numNewOriginalPrice} → ₹{numNewPrice}
+                    </span>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                      Category
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700">
+                        Category
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddCategoryModal(true)}
+                        className="text-[10px] font-bold text-black hover:underline flex items-center gap-0.5 cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>+ New</span>
+                      </button>
+                    </div>
                     <select
                       value={newCategory}
-                      onChange={(e) => setNewCategory(e.target.value as any)}
-                      className="w-full text-xs p-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      className="w-full text-xs p-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black font-medium"
                     >
-                      <option value="Diaries">Diaries</option>
-                      <option value="Planners">Planners</option>
-                      <option value="Trackers">Trackers</option>
-                      <option value="Bookmarks">Bookmarks</option>
-                      <option value="To-Do Lists">To-Do Lists</option>
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -943,8 +1068,16 @@ export default function AdminPage() {
                     </span>
                   </div>
 
+                  {hasNewDiscount && (
+                    <div className="absolute top-2.5 right-2.5 z-10">
+                      <span className="inline-flex items-center text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded shadow-md">
+                        {newDiscountPercent}% OFF
+                      </span>
+                    </div>
+                  )}
+
                   {newImages.length > 1 && (
-                    <div className="absolute top-2.5 right-2.5 bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded shadow-xs flex items-center gap-1">
+                    <div className={`absolute ${hasNewDiscount ? "bottom-2.5" : "top-2.5"} right-2.5 bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded shadow-xs flex items-center gap-1`}>
                       <ImageIcon className="w-3 h-3 text-neutral-300" />
                       <span>{newImages.length} Photos</span>
                     </div>
@@ -965,13 +1098,20 @@ export default function AdminPage() {
 
                   <div className="flex items-center justify-between pt-3 mt-3 border-t border-neutral-100">
                     <div>
-                      <span className="text-base font-bold text-black font-mono">
-                        ₹{newPrice || "0"}
-                      </span>
-                      {newOriginalPrice && (
-                        <span className="text-xs text-neutral-400 line-through ml-1.5 font-mono">
-                          ₹{newOriginalPrice}
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-base font-bold text-black font-mono">
+                          ₹{newPrice || "0"}
                         </span>
+                        {hasNewDiscount && (
+                          <span className="text-xs text-neutral-400 line-through font-mono">
+                            ₹{newOriginalPrice}
+                          </span>
+                        )}
+                      </div>
+                      {hasNewDiscount && (
+                        <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">
+                          Save {newDiscountPercent}% (₹{newSavingsAmount})
+                        </div>
                       )}
                     </div>
                     <span className="px-3 py-1.5 bg-black text-white rounded text-[11px] font-bold uppercase tracking-wider">
@@ -1040,20 +1180,21 @@ export default function AdminPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                    Price (₹) *
+                    Offer / Selling Price (₹) *
                   </label>
                   <input
                     type="number"
                     required
                     value={editingProduct.price}
                     onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })}
-                    className="w-full text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black font-mono"
+                    className="w-full text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black font-mono font-bold"
                   />
+                  <span className="text-[10px] text-neutral-400">Customer pays this rate</span>
                 </div>
 
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                    Original Price (₹)
+                    Original MRP (₹)
                   </label>
                   <input
                     type="number"
@@ -1061,24 +1202,52 @@ export default function AdminPage() {
                     onChange={(e) => setEditingProduct({ ...editingProduct, originalPrice: parseFloat(e.target.value) || undefined })}
                     className="w-full text-xs px-3.5 py-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black font-mono"
                   />
+                  <span className="text-[10px] text-neutral-400">Strikethrough reference rate</span>
                 </div>
               </div>
 
+              {/* Edit Modal Discount Preview */}
+              {Boolean(editingProduct.originalPrice && editingProduct.originalPrice > editingProduct.price) && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-emerald-600 text-white font-black text-[10px] px-2 py-0.5 rounded shadow-xs tracking-wider">
+                      {Math.round((((editingProduct.originalPrice || 0) - editingProduct.price) / (editingProduct.originalPrice || 1)) * 100)}% OFF
+                    </span>
+                    <span className="text-emerald-800 font-bold text-[11px]">
+                      Offer Discount: Customer saves ₹{(editingProduct.originalPrice || 0) - editingProduct.price}!
+                    </span>
+                  </div>
+                  <span className="text-emerald-700 font-mono text-[10px]">
+                    MRP: ₹{editingProduct.originalPrice} → Offer: ₹{editingProduct.price}
+                  </span>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
-                    Category
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700">
+                      Category
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCategoryModal(true)}
+                      className="text-[10px] font-bold text-black hover:underline flex items-center gap-0.5 cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>+ New</span>
+                    </button>
+                  </div>
                   <select
                     value={editingProduct.category}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value as any })}
-                    className="w-full text-xs p-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black"
+                    onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
+                    className="w-full text-xs p-2 bg-neutral-50 border border-neutral-300 rounded-lg text-black font-medium"
                   >
-                    <option value="Diaries">Diaries</option>
-                    <option value="Planners">Planners</option>
-                    <option value="Trackers">Trackers</option>
-                    <option value="Bookmarks">Bookmarks</option>
-                    <option value="To-Do Lists">To-Do Lists</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -1263,6 +1432,73 @@ export default function AdminPage() {
         isOpen={isLabelModalOpen}
         onClose={() => setIsLabelModalOpen(false)}
       />
+
+      {/* ADD NEW CATEGORY MODAL */}
+      {showAddCategoryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-neutral-200 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-neutral-100">
+              <h3 className="font-bold text-sm text-black uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>Add New Category</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddCategoryModal(false);
+                  setCategoryFeedback(null);
+                }}
+                className="text-neutral-400 hover:text-black cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-neutral-500 leading-relaxed">
+              Create a new product category. It will instantly sync to Firebase and appear in both the admin selector and the customer storefront filter.
+            </p>
+
+            {categoryFeedback && (
+              <div className="p-2.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold text-center">
+                ✅ {categoryFeedback}
+              </div>
+            )}
+
+            <form onSubmit={handleAddNewCategory} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1">
+                  Category Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="e.g., Desk Mats, Wall Calendars, Pens"
+                  className="w-full text-xs px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-lg text-black focus:outline-none focus:border-black font-semibold"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowAddCategoryModal(false)}
+                  className="flex-1 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-black font-bold text-xs uppercase rounded-lg cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase rounded-lg cursor-pointer transition-colors shadow-xs"
+                >
+                  Add Category
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

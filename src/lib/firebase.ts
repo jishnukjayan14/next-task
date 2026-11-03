@@ -161,3 +161,37 @@ export const updateOrderStatusInFirestore = async (
     console.error("Error updating order status in Firestore:", err);
   }
 };
+
+/**
+ * Real-time listener for Categories
+ */
+export const subscribeToCategories = (onCategories: (categories: string[]) => void) => {
+  try {
+    const docRef = doc(db, "settings", "categories");
+    return onSnapshot(
+      docRef,
+      (docSnap) => {
+        if (docSnap.exists() && Array.isArray(docSnap.data()?.list)) {
+          onCategories(docSnap.data().list);
+        }
+      },
+      (err) => {
+        console.warn("Firestore categories sync note:", err.message);
+      }
+    );
+  } catch (err) {
+    console.warn("Could not initialize categories listener:", err);
+    return () => {};
+  }
+};
+
+/**
+ * Save updated categories list to Firestore
+ */
+export const saveCategoriesToFirestore = async (categories: string[]) => {
+  try {
+    await setDoc(doc(db, "settings", "categories"), { list: categories });
+  } catch (err) {
+    console.error("Error saving categories to Firestore:", err);
+  }
+};

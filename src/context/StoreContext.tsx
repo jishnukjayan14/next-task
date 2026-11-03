@@ -1,14 +1,16 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { Product, INITIAL_PRODUCTS } from "@/data/products";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import { Product, INITIAL_PRODUCTS, DEFAULT_CATEGORIES } from "@/data/products";
 import {
   subscribeToProducts,
   saveProductToFirestore,
   removeProductFromFirestore,
   subscribeToOrders,
   saveOrderToFirestore,
-  updateOrderStatusInFirestore
+  updateOrderStatusInFirestore,
+  subscribeToCategories,
+  saveCategoriesToFirestore
 } from "@/lib/firebase";
 
 export interface CartItem {
@@ -89,6 +91,10 @@ interface StoreContextType {
   createOrder: (shippingAddress?: ShippingAddress, razorpayPaymentId?: string) => Order;
   updateOrderStatus: (orderId: string, status: Order["fulfillmentStatus"]) => void;
 
+  // Categories Management (Real-time Cloud Synced)
+  categories: string[];
+  addCategory: (newCategory: string) => void;
+
   // Product Management (Admin)
   addProduct: (newProduct: Product) => void;
   updateProduct: (updatedProduct: Product) => void;
@@ -111,6 +117,26 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [customer, setCustomer] = useState<CustomerUser | null>(null);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
+  // Dynamic Categories Management
+  const [customCategories, setCustomCategories] = useState<string[]>(DEFAULT_CATEGORIES);
+
+  // Derived full categories list (merged with any category from existing products)
+  const categories = useMemo(() => {
+    const productCats = products.map((p) => p.category).filter(Boolean);
+    return Array.from(new Set([...DEFAULT_CATEGORIES, ...customCategories, ...productCats]));
+  }, [customCategories, products]);
+
+  const addCategory = (newCategory: string) => {
+    const trimmed = newCategory.trim();
+    if (!trimmed) return;
+    const updated = Array.from(new Set([...categories, trimmed]));
+    setCustomCategories(updated);
+    try {
+      localStorage.setItem("nexttask_categories", JSON.stringify(updated));
+    } catch {}
+    saveCategoriesToFirestore(updated);
+  };
+
   // Real-time Cloud Sync with Firebase Firestore (All devices stay in sync)
   useEffect(() => {
     // 1. Subscribe to real-time products across all phones/computers
@@ -127,15 +153,31 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     });
 
+    // 3. Subscribe to real-time categories across all devices
+    const unsubscribeCategories = subscribeToCategories((cloudCats) => {
+      if (cloudCats && cloudCats.length > 0) {
+        setCustomCategories(Array.from(new Set([...DEFAULT_CATEGORIES, ...cloudCats])));
+      }
+    });
+
     return () => {
       if (typeof unsubscribeProducts === "function") unsubscribeProducts();
       if (typeof unsubscribeOrders === "function") unsubscribeOrders();
+      if (typeof unsubscribeCategories === "function") unsubscribeCategories();
     };
   }, []);
 
   // Load from localStorage on client
   useEffect(() => {
     try {
+      const savedCategories = localStorage.getItem("nexttask_categories");
+      if (savedCategories) {
+        const parsed = JSON.parse(savedCategories);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCustomCategories(Array.from(new Set([...DEFAULT_CATEGORIES, ...parsed])));
+        }
+      }
+
       const savedProducts = localStorage.getItem("nexttask_products");
       if (savedProducts) {
         setProducts(JSON.parse(savedProducts));
@@ -381,6 +423,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         orders,
         createOrder,
         updateOrderStatus,
+        categories,
+        addCategory,
         addProduct,
         updateProduct,
         deleteProduct,
